@@ -599,13 +599,43 @@ const Toast = ({ msg, type }) => (
   }}>{msg}</div>
 );
 
-const ColorRow = ({ label, value, onChange }) => (
-  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
-    <input type="color" value={value || "#000000"} onChange={e => onChange(e.target.value)}
-      style={{ width: 28, height: 24, padding: 2, border: "1px solid #e5e7eb", borderRadius: 4, cursor: "pointer" }} />
-    <span style={{ fontSize: 11, color: "#6b7280" }}>{label}</span>
-  </div>
-);
+const parseColorVal = (v) => {
+  if (!v) return { hex: "#000000", alpha: 1 };
+  const m = v.match(/rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\s*\)/);
+  if (m) {
+    const hex = "#" + [m[1], m[2], m[3]].map(n => parseInt(n).toString(16).padStart(2, "0")).join("");
+    return { hex, alpha: m[4] !== undefined ? parseFloat(m[4]) : 1 };
+  }
+  if (v.startsWith("#")) return { hex: v.slice(0, 7), alpha: 1 };
+  return { hex: "#000000", alpha: 1 };
+};
+const rgbaOut = (hex, alpha) => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return alpha >= 1 ? hex : `rgba(${r},${g},${b},${+alpha.toFixed(2)})`;
+};
+
+const ColorRow = ({ label, value, onChange }) => {
+  const { hex, alpha } = parseColorVal(value);
+  return (
+    <div style={{ marginBottom: 7 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <input type="color" value={hex} onChange={e => onChange(rgbaOut(e.target.value, alpha))}
+          style={{ width: 28, height: 24, padding: 2, border: "1px solid #e5e7eb", borderRadius: 4, cursor: "pointer", flexShrink: 0 }} />
+        <span style={{ fontSize: 11, color: "#6b7280", flex: 1 }}>{label}</span>
+        <span style={{ fontSize: 10, color: "#9ca3af", width: 28, textAlign: "right", flexShrink: 0 }}>{Math.round(alpha * 100)}%</span>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3, paddingLeft: 34 }}>
+        <span style={{ fontSize: 9, color: "#d1d5db" }}>0</span>
+        <input type="range" min="0" max="100" value={Math.round(alpha * 100)}
+          onChange={e => onChange(rgbaOut(hex, parseInt(e.target.value) / 100))}
+          style={{ flex: 1, height: 3, accentColor: "#6366f1", cursor: "pointer" }} />
+        <span style={{ fontSize: 9, color: "#d1d5db" }}>100</span>
+      </div>
+    </div>
+  );
+};
 
 const Field = ({ label, value, onChange, textarea, placeholder, type = "text" }) => (
   <div style={{ marginBottom: 8 }}>
