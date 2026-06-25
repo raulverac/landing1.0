@@ -5,8 +5,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // ─── CONSTANTS ──────────────────────────────────────────────────────────────
 const ACC = "#e6a817";
 const DARK = "#1a2535";
-const SNAMES = ["Clásica", "Beneficios", "Storytelling", "Urgencia", "Profesional"];
-const SIDS = ["clasica", "beneficios", "storytelling", "urgencia", "profesional"];
+const SNAMES = ["Clásica", "Beneficios", "Storytelling", "Urgencia", "Profesional", "UNAB"];
+const SIDS = ["clasica", "beneficios", "storytelling", "urgencia", "profesional", "unab"];
 
 // ─── DEFAULT DATA ────────────────────────────────────────────────────────────
 const mkDefault = (struct = "clasica") => ({
@@ -125,27 +125,58 @@ const mkDefault = (struct = "clasica") => ({
     mediaUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=700&q=70",
     videoUrl: "", bgColor: "#ffffff", textColor: "#333333", imgLeft: true,
   },
-  // Form config (used in profesional footer + standalone tab)
+  // Form config
   form: {
     type: "basic", // "basic" | "embed"
     embedCode: "",
-    title: "Contáctanos",
-    subtitle: "Cuéntanos sobre tu necesidad",
-    btnText: "Enviar mis Datos",
-    btnColor: "#c8f135",
-    btnTextColor: DARK,
-    fields: [
+    title: struct === "unab" ? "" : "Contáctanos",
+    subtitle: struct === "unab" ? "" : "Cuéntanos sobre tu necesidad",
+    btnText: struct === "unab" ? "Enviar Datos" : "Enviar mis Datos",
+    btnColor: struct === "unab" ? DARK : "#c8f135",
+    btnTextColor: struct === "unab" ? "#ffffff" : DARK,
+    fields: struct === "unab" ? [
+      { id: "rut", label: "RUT", type: "text", placeholder: "RUT (Ej. 99999999-9)", required: true },
+      { id: "nombres", label: "Nombres", type: "text", placeholder: "Nombres", required: true },
+      { id: "apellidoP", label: "Apellido Paterno", type: "text", placeholder: "Apellido Paterno", required: true },
+      { id: "apellidoM", label: "Apellido Materno", type: "text", placeholder: "Apellido Materno", required: true },
+      { id: "telefono", label: "Teléfono", type: "tel", placeholder: "Teléfono", required: false },
+      { id: "email", label: "Email", type: "email", placeholder: "Email", required: true },
+      { id: "programa", label: "Programa de Interés", type: "text", placeholder: "-- Programa de Interés --", required: false },
+      { id: "campus", label: "Campus", type: "text", placeholder: "-- Seleccione Campus --", required: false },
+    ] : [
       { id: "nombre", label: "Nombre", type: "text", placeholder: "Nombre", required: true },
       { id: "email", label: "Correo", type: "email", placeholder: "Email", required: true },
       { id: "telefono", label: "Número de móvil", type: "tel", placeholder: "Teléfono", required: false },
       { id: "mensaje", label: "Cuéntanos sobre tu necesidad", type: "textarea", placeholder: "Mensaje", required: false },
     ],
     privacyText: "Solo usaremos tu información para desarrollar la propuesta de servicios que nos solicites.",
-    showPrivacyCheck: true,
-    bgColor: DARK,
+    showPrivacyCheck: struct !== "unab",
+    bgColor: struct === "unab" ? "rgba(255,255,255,0.12)" : DARK,
     textColor: "#ffffff",
     showInHero: struct === "clasica",
     showInFooter: struct === "profesional",
+  },
+  // UNAB structure data
+  unab: {
+    admisionLabel: "Admisión", admisionYear: "2026",
+    heroTitle: "Es momento de llegar más lejos",
+    contentBgColor: "rgba(15,25,45,0.82)",
+    programsTitle: "Carreras y Programas",
+    programsBgColor: "#ffffff", programsTitleBg: DARK, programsTitleColor: "#ffffff",
+    programsTextColor: "#1a2535", programsFooterText: "+INFORMACIÓN EN TU-SITIO.CL", programsFooterColor: DARK,
+    categories: [
+      { name: "Presencial", items: ["Contador Auditor", "Ingeniería en Administración de Empresas", "Ingeniería Comercial", "Prosecución de Estudios Educación Diferencial", "Prosecución de Estudios Educación Parvularia"] },
+      { name: "Semipresencial", items: ["Ingeniería en Computación e Informática", "Ingeniería en Información y Control de Gestión", "Ingeniería Civil Industrial", "Ingeniería Industrial", "Ingeniería en Automatización y Robótica"] },
+      { name: "Online", items: ["Contador Auditor", "Ingeniería en Administración de Empresas", "Ingeniería Civil Industrial", "Ingeniería en Información y Control de Gestión"] },
+    ],
+    accreditationBgColor: DARK,
+    accreditations: [
+      { text: "8 años MSCHE", icon: "|||", logoUrl: "" },
+      { text: "6 años Acreditada Nivel Excelencia", icon: "A↑", logoUrl: "" },
+      { text: "AUDIT", icon: "📋", logoUrl: "" },
+      { text: "CHEA", icon: "★", logoUrl: "" },
+      { text: "CIQG", icon: "◎", logoUrl: "" },
+    ],
   },
   footer: {
     bgColor: DARK, textColor: "#cccccc", company: "MiMarca S.A.",
@@ -471,6 +502,45 @@ const buildPreviewHTML = (d, full = false) => {
         </div>
       </footer>`;
 
+  if (s === "unab") {
+    const u = d.unab || {};
+    const bgImg = slides[0] || "";
+    return `<div style="font-family:'Segoe UI',sans-serif;width:100%">
+      <section style="position:relative;min-height:${full?180:110}px;background:${bgImg?`url('${bgImg}') center/cover no-repeat`:d.header.bgColor};overflow:hidden">
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,${d.hero.overlay||0.45})"></div>
+        <div style="position:relative;z-index:2;padding:${full?"28px 50px":"14px 24px"};display:flex;align-items:flex-start;justify-content:space-between">
+          <div style="display:flex;align-items:flex-start;gap:${full?18:12}px">
+            ${d.header.logoUrl?`<img src="${d.header.logoUrl}" style="height:${full?80:48}px;object-fit:contain;border-radius:6px;background:rgba(255,255,255,0.15);padding:4px">`:`<div style="background:rgba(255,255,255,.2);border-radius:6px;padding:${full?"8px 14px":"5px 8px"};color:#fff;font-weight:700;font-size:${full?14:10}px">${d.header.logoText}</div>`}
+            <h1 style="color:#fff;font-size:${full?52:22}px;font-weight:900;line-height:1.1;max-width:${full?500:260}px;margin:0">${u.heroTitle||"Es momento de llegar más lejos"}</h1>
+          </div>
+          <div style="text-align:right">
+            <div style="color:#fff;font-size:${full?12:7}px;opacity:.9;text-transform:uppercase;letter-spacing:2px">${u.admisionLabel||"Admisión"}</div>
+            <div style="color:#fff;font-size:${full?54:26}px;font-weight:900;line-height:1">${u.admisionYear||"2026"}</div>
+          </div>
+        </div>
+      </section>
+      <div style="display:grid;grid-template-columns:1fr 1fr;background:${u.contentBgColor||"rgba(15,25,45,0.82)"}">
+        <div style="padding:${full?"22px 28px":"10px 14px"}">
+          <div style="background:${u.programsBgColor||"#fff"};border-radius:${full?8:5}px;overflow:hidden">
+            <div style="background:${u.programsTitleBg||DARK};padding:${full?"10px 16px":"6px 10px"};text-align:center">
+              <div style="color:${u.programsTitleColor||"#fff"};font-size:${full?17:10}px;font-weight:700">${u.programsTitle||"Carreras y Programas"}</div>
+            </div>
+            <div style="padding:${full?"14px 18px":"7px 10px"}">
+              ${(u.categories||[]).map(cat=>`<div style="margin-bottom:${full?12:5}px"><div style="font-size:${full?13:8}px;font-weight:700;color:${u.programsTextColor||DARK};margin-bottom:${full?5:2}px">${cat.name}</div><ul style="margin:0;padding-left:${full?16:10}px">${(cat.items||[]).map(item=>`<li style="font-size:${full?11:7}px;color:${u.programsTextColor||"#374151"};margin-bottom:${full?3:1}px;line-height:1.4">${item}</li>`).join("")}</ul></div>`).join("")}
+              ${u.programsFooterText?`<div style="margin-top:${full?12:5}px;padding-top:${full?8:4}px;border-top:1px solid #e5e7eb;text-align:center;font-size:${full?11:7}px;font-weight:700;color:${u.programsFooterColor||DARK}">${u.programsFooterText}</div>`:""}
+            </div>
+          </div>
+        </div>
+        <div style="padding:${full?"22px 28px":"10px 14px"};display:flex;align-items:flex-start">
+          <div style="width:100%">${formHTML(d.form, full)}</div>
+        </div>
+      </div>
+      <footer style="background:${u.accreditationBgColor||DARK};padding:${full?"20px 50px":"10px 24px"};display:flex;align-items:center;justify-content:center;gap:${full?36:14}px;flex-wrap:wrap">
+        ${(u.accreditations||[]).map(a=>a.logoUrl?`<img src="${a.logoUrl}" style="height:${full?40:22}px;object-fit:contain">`:`<div style="color:#fff;text-align:center;font-size:${full?9:6}px;opacity:.85"><div style="font-size:${full?18:10}px;font-weight:900">${a.icon||""}</div>${a.text}</div>`).join("")}
+      </footer>
+    </div>`;
+  }
+
   return `<div style="font-family:'Segoe UI',sans-serif;width:100%">${hdr}${hero}${mid}${ftr}</div>`;
 };
 
@@ -624,6 +694,7 @@ const StructureSelector = ({ selected, onSelect, onApply }) => {
     { id: "storytelling", num: 3, name: "Estructura Storytelling", desc: "Cuenta una historia para conectar y convertir.", pop: false },
     { id: "urgencia", num: 4, name: "Estructura de Urgencia", desc: "Genera acción inmediata con escasez o tiempo limitado.", pop: false },
     { id: "profesional", num: 5, name: "Estructura Profesional", desc: "Ecosistema completo con catálogo, fases y formulario en footer.", pop: false },
+    { id: "unab", num: 6, name: "Formato Universidad", desc: "Portada universitaria: logo + título, programas, formulario y acreditaciones.", pop: false },
   ];
   return (
     <div style={{ flex: 1, overflow: "auto", background: "#f5f3ee", padding: 24 }}>
@@ -755,6 +826,29 @@ const WireFrame = ({ id }) => {
           </div>
         </div>
       </>}
+      {id === "unab" && <>
+        <div style={{ background: DARK, borderRadius: 4, height: 26, marginBottom: 3, display: "flex", alignItems: "center", padding: "0 5px", gap: 4 }}>
+          <div style={{ width: 10, height: 10, borderRadius: 2, background: "rgba(255,255,255,.3)" }} />
+          <div style={{ flex: 1 }}>{line("75%")}{line("55%")}</div>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ background: "rgba(255,255,255,.25)", borderRadius: 1, height: 3, width: 18, marginBottom: 2 }} />
+            <div style={{ background: "#fff", borderRadius: 1, height: 6, width: 14 }} />
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 3, marginBottom: 3, height: 36 }}>
+          <div style={{ flex: 1, background: "#fff", borderRadius: 3, padding: 3 }}>
+            <div style={{ background: DARK, borderRadius: 2, height: 5, width: "80%", margin: "0 auto 2px" }} />
+            {[1,2,3].map(k=><div key={k} style={{ display:"flex",gap:1,marginBottom:1 }}><div style={{ width:3,height:3,borderRadius:"50%",background:ACC,flexShrink:0,marginTop:1 }} /><div style={{ flex:1,height:3,background:"#e5e7eb",borderRadius:1 }} /></div>)}
+          </div>
+          <div style={{ flex: 1, padding: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+            {[1,2,3,4].map(k=><div key={k} style={{ height:4,background:"rgba(255,255,255,.25)",borderRadius:2 }} />)}
+            <div style={{ height:5,background:ACC,borderRadius:2,width:"70%" }} />
+          </div>
+        </div>
+        <div style={{ background: DARK, borderRadius: 3, height: 8, display: "flex", gap: 4, alignItems: "center", justifyContent: "center", padding: "0 4px" }}>
+          {[1,2,3,4,5].map(k=><div key={k} style={{ flex:1,height:4,background:"rgba(255,255,255,.25)",borderRadius:1 }} />)}
+        </div>
+      </>}
       {footer}
     </div>
   );
@@ -781,8 +875,8 @@ const EditorSidebar = ({ data, setData, onSave }) => {
   const tabs = [
     { id: "header", label: "Header" },
     { id: "hero", label: "Hero" },
-    { id: "services", label: s === "beneficios" ? "Beneficios" : s === "urgencia" ? "Urgencia" : s === "profesional" ? "Ecosistema" : "Servicios" },
-    { id: "about", label: s === "storytelling" ? "Historia" : s === "profesional" ? "Catálogo" : "Nosotros" },
+    { id: "services", label: s === "beneficios" ? "Beneficios" : s === "urgencia" ? "Urgencia" : s === "profesional" ? "Ecosistema" : s === "unab" ? "Programas" : "Servicios" },
+    { id: "about", label: s === "storytelling" ? "Historia" : s === "profesional" ? "Catálogo" : s === "unab" ? "Acreditaciones" : "Nosotros" },
     { id: "form", label: "Formulario" },
     { id: "utm", label: "UTM" },
     { id: "footer", label: "Footer" },
@@ -1009,6 +1103,78 @@ const EditorSidebar = ({ data, setData, onSave }) => {
                     style={{ width:"100%",padding:"3px 6px",border:"1px solid #e5e7eb",borderRadius:4,fontSize:11,resize:"none",outline:"none" }} />
                 </div>
               ))}
+            </Panel>
+          </>);
+        })()}
+
+        {tab === "services" && s === "unab" && (() => {
+          const u = data.unab || {};
+          const updU = (k, v) => setData(d => ({ ...d, unab: { ...d.unab, [k]: v } }));
+          return (<>
+            <Panel title="🎓 Hero UNAB">
+              <Field label="Título principal" value={u.heroTitle} onChange={v => updU("heroTitle", v)} />
+              <Field label="Etiqueta admisión" value={u.admisionLabel} onChange={v => updU("admisionLabel", v)} />
+              <Field label="Año admisión" value={u.admisionYear} onChange={v => updU("admisionYear", v)} />
+              <ColorRow label="Fondo overlay" value={u.contentBgColor} onChange={v => updU("contentBgColor", v)} />
+            </Panel>
+            <Panel title="📋 Sección Programas">
+              <Field label="Título sección" value={u.programsTitle} onChange={v => updU("programsTitle", v)} />
+              <Field label="Texto pie panel" value={u.programsFooterText} onChange={v => updU("programsFooterText", v)} />
+              <ColorRow label="Fondo panel" value={u.programsBgColor} onChange={v => updU("programsBgColor", v)} />
+              <ColorRow label="Fondo título" value={u.programsTitleBg} onChange={v => updU("programsTitleBg", v)} />
+              <ColorRow label="Color título" value={u.programsTitleColor} onChange={v => updU("programsTitleColor", v)} />
+              <ColorRow label="Color texto" value={u.programsTextColor} onChange={v => updU("programsTextColor", v)} />
+            </Panel>
+            <Panel title="📚 Categorías y Carreras">
+              {(u.categories || []).map((cat, ci) => (
+                <div key={ci} style={{ padding: 7, background: "#f9fafb", borderRadius: 6, marginBottom: 7 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+                    <input value={cat.name} onChange={e => updU("categories", u.categories.map((x,j)=>j===ci?{...x,name:e.target.value}:x))}
+                      style={{ flex:1,padding:"3px 6px",border:"1px solid #e5e7eb",borderRadius:4,fontSize:11,fontWeight:600,outline:"none" }} />
+                    <button onClick={() => updU("categories", u.categories.filter((_,j)=>j!==ci))}
+                      style={{ padding:"1px 6px",border:"1px solid #fca5a5",background:"#fff",color:"#ef4444",borderRadius:3,cursor:"pointer",fontSize:10,marginLeft:4 }}>✕</button>
+                  </div>
+                  {(cat.items||[]).map((item,ii)=>(
+                    <div key={ii} style={{ display:"flex",gap:3,marginBottom:3 }}>
+                      <input value={item} onChange={e=>updU("categories",u.categories.map((x,j)=>j===ci?{...x,items:x.items.map((y,k)=>k===ii?e.target.value:y)}:x))}
+                        style={{ flex:1,padding:"2px 5px",border:"1px solid #e5e7eb",borderRadius:3,fontSize:10,outline:"none" }} />
+                      <button onClick={()=>updU("categories",u.categories.map((x,j)=>j===ci?{...x,items:x.items.filter((_,k)=>k!==ii)}:x))}
+                        style={{ padding:"1px 4px",border:"1px solid #fca5a5",background:"#fff",color:"#ef4444",borderRadius:3,cursor:"pointer",fontSize:10 }}>✕</button>
+                    </div>
+                  ))}
+                  <button onClick={()=>updU("categories",u.categories.map((x,j)=>j===ci?{...x,items:[...x.items,"Nueva carrera"]}:x))}
+                    style={{ padding:"2px 7px",borderRadius:4,border:"1px solid #e5e7eb",background:"#fff",cursor:"pointer",fontSize:10,color:"#6b7280" }}>+ Carrera</button>
+                </div>
+              ))}
+              <button onClick={()=>updU("categories",[...(u.categories||[]),{name:"Nueva categoría",items:[]}])}
+                style={{ padding:"4px 10px",borderRadius:5,border:"1px solid #e5e7eb",background:"#fff",cursor:"pointer",fontSize:11,color:"#6b7280" }}>+ Categoría</button>
+            </Panel>
+          </>);
+        })()}
+
+        {tab === "about" && s === "unab" && (() => {
+          const u = data.unab || {};
+          const updU = (k, v) => setData(d => ({ ...d, unab: { ...d.unab, [k]: v } }));
+          return (<>
+            <Panel title="🏆 Acreditaciones (Footer)">
+              <ColorRow label="Fondo footer" value={u.accreditationBgColor} onChange={v => updU("accreditationBgColor", v)} />
+              {(u.accreditations||[]).map((a,i)=>(
+                <div key={i} style={{ padding:7,background:"#f9fafb",borderRadius:6,marginBottom:6 }}>
+                  <div style={{ display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:11,fontWeight:600 }}>
+                    Logo {i+1}
+                    <button onClick={()=>updU("accreditations",u.accreditations.filter((_,j)=>j!==i))}
+                      style={{ padding:"1px 5px",border:"1px solid #fca5a5",background:"#fff",color:"#ef4444",borderRadius:3,cursor:"pointer",fontSize:10 }}>✕</button>
+                  </div>
+                  <input value={a.text} onChange={e=>updU("accreditations",u.accreditations.map((x,j)=>j===i?{...x,text:e.target.value}:x))}
+                    placeholder="Texto" style={{ width:"100%",padding:"3px 6px",border:"1px solid #e5e7eb",borderRadius:4,fontSize:11,marginBottom:3,outline:"none" }} />
+                  <input value={a.icon} onChange={e=>updU("accreditations",u.accreditations.map((x,j)=>j===i?{...x,icon:e.target.value}:x))}
+                    placeholder="Icono (si no hay logo)" style={{ width:"100%",padding:"3px 6px",border:"1px solid #e5e7eb",borderRadius:4,fontSize:11,marginBottom:3,outline:"none" }} />
+                  <input value={a.logoUrl} onChange={e=>updU("accreditations",u.accreditations.map((x,j)=>j===i?{...x,logoUrl:e.target.value}:x))}
+                    placeholder="URL imagen logo" style={{ width:"100%",padding:"3px 6px",border:"1px solid #e5e7eb",borderRadius:4,fontSize:11,outline:"none" }} />
+                </div>
+              ))}
+              <button onClick={()=>updU("accreditations",[...(u.accreditations||[]),{text:"Acreditación",icon:"★",logoUrl:""}])}
+                style={{ padding:"4px 10px",borderRadius:5,border:"1px solid #e5e7eb",background:"#fff",cursor:"pointer",fontSize:11,color:"#6b7280" }}>+ Agregar logo</button>
             </Panel>
           </>);
         })()}
@@ -1243,6 +1409,73 @@ const LivePreview = ({ data }) => {
   const F = false;
   const P = "24px";
   const hH = (data.form && data.form.showInHero) ? 280 : 220;
+
+  if (s === "unab") {
+    const u = data.unab || {};
+    const bgImg = slides[0] || "";
+    return (
+      <div style={{ fontFamily: "'Segoe UI',sans-serif", width: "100%" }}>
+        {/* UNAB Header */}
+        <section style={{ position: "relative", minHeight: 110, background: bgImg ? `url(${bgImg}) center/cover no-repeat` : data.header.bgColor, overflow: "hidden" }}>
+          <div style={{ position: "absolute", inset: 0, background: `rgba(0,0,0,${data.hero.overlay || 0.45})` }} />
+          <div style={{ position: "relative", zIndex: 2, padding: "14px 24px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              {data.header.logoUrl
+                ? <img src={data.header.logoUrl} style={{ height: 50, objectFit: "contain", borderRadius: 6, background: "rgba(255,255,255,0.15)", padding: 4 }} alt="logo" />
+                : <div style={{ background: "rgba(255,255,255,.2)", borderRadius: 6, padding: "5px 9px", color: "#fff", fontWeight: 700, fontSize: 10 }}>{data.header.logoText}</div>
+              }
+              <h1 style={{ color: "#fff", fontSize: 22, fontWeight: 900, lineHeight: 1.1, maxWidth: 260, margin: 0 }}>{u.heroTitle || "Es momento de llegar más lejos"}</h1>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ color: "#fff", fontSize: 7, opacity: .9, textTransform: "uppercase", letterSpacing: 2 }}>{u.admisionLabel || "Admisión"}</div>
+              <div style={{ color: "#fff", fontSize: 26, fontWeight: 900, lineHeight: 1 }}>{u.admisionYear || "2026"}</div>
+            </div>
+          </div>
+        </section>
+        {/* Programs + Form */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", background: u.contentBgColor || "rgba(15,25,45,0.82)" }}>
+          <div style={{ padding: "10px 14px" }}>
+            <div style={{ background: u.programsBgColor || "#fff", borderRadius: 5, overflow: "hidden" }}>
+              <div style={{ background: u.programsTitleBg || DARK, padding: "6px 10px", textAlign: "center" }}>
+                <div style={{ color: u.programsTitleColor || "#fff", fontSize: 10, fontWeight: 700 }}>{u.programsTitle || "Carreras y Programas"}</div>
+              </div>
+              <div style={{ padding: "7px 10px" }}>
+                {(u.categories || []).map((cat, i) => (
+                  <div key={i} style={{ marginBottom: 5 }}>
+                    <div style={{ fontSize: 8, fontWeight: 700, color: u.programsTextColor || DARK, marginBottom: 2 }}>{cat.name}</div>
+                    <ul style={{ margin: 0, paddingLeft: 10 }}>
+                      {(cat.items || []).map((item, j) => (
+                        <li key={j} style={{ fontSize: 7, color: u.programsTextColor || "#374151", marginBottom: 1, lineHeight: 1.4 }}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                {u.programsFooterText && (
+                  <div style={{ marginTop: 5, paddingTop: 4, borderTop: "1px solid #e5e7eb", textAlign: "center", fontSize: 7, fontWeight: 700, color: u.programsFooterColor || DARK }}>{u.programsFooterText}</div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div style={{ padding: "10px 14px", display: "flex", alignItems: "flex-start" }}>
+            <div style={{ width: "100%" }}>
+              <ProForm form={data.form} compact={true} />
+            </div>
+          </div>
+        </div>
+        {/* Accreditations */}
+        <footer style={{ background: u.accreditationBgColor || DARK, padding: "10px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
+          {(u.accreditations || []).map((a, i) => (
+            a.logoUrl
+              ? <img key={i} src={a.logoUrl} style={{ height: 22, objectFit: "contain" }} alt={a.text} />
+              : <div key={i} style={{ color: "#fff", textAlign: "center", fontSize: 6, opacity: .85 }}>
+                  <div style={{ fontSize: 10, fontWeight: 900 }}>{a.icon}</div>
+                  <div>{a.text}</div>
+                </div>
+          ))}
+        </footer>
+      </div>
+    );
+  }
 
   return (
     <div style={{ fontFamily: "'Segoe UI',sans-serif", width: "100%" }}>
