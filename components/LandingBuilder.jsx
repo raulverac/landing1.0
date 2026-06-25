@@ -505,39 +505,61 @@ const buildPreviewHTML = (d, full = false) => {
   if (s === "unab") {
     const u = d.unab || {};
     const bgImg = slides[0] || "";
-    return `<div style="font-family:'Segoe UI',sans-serif;width:100%">
-      <section style="position:relative;min-height:${full?180:110}px;background:${bgImg?`url('${bgImg}') center/cover no-repeat`:d.header.bgColor};overflow:hidden">
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,${d.hero.overlay||0.45})"></div>
-        <div style="position:relative;z-index:2;padding:${full?"28px 50px":"14px 24px"};display:flex;align-items:flex-start;justify-content:space-between">
-          <div style="display:flex;align-items:flex-start;gap:${full?18:12}px">
-            ${d.header.logoUrl?`<img src="${d.header.logoUrl}" style="height:${full?80:48}px;object-fit:contain;border-radius:6px;background:rgba(255,255,255,0.15);padding:4px">`:`<div style="background:rgba(255,255,255,.2);border-radius:6px;padding:${full?"8px 14px":"5px 8px"};color:#fff;font-weight:700;font-size:${full?14:10}px">${d.header.logoText}</div>`}
-            <h1 style="color:#fff;font-size:${full?52:22}px;font-weight:900;line-height:1.1;max-width:${full?500:260}px;margin:0">${u.heroTitle||"Es momento de llegar más lejos"}</h1>
-          </div>
-          <div style="text-align:right">
-            <div style="color:#fff;font-size:${full?12:7}px;opacity:.9;text-transform:uppercase;letter-spacing:2px">${u.admisionLabel||"Admisión"}</div>
-            <div style="color:#fff;font-size:${full?54:26}px;font-weight:900;line-height:1">${u.admisionYear||"2026"}</div>
+    const unabForm = (form) => {
+      if (!form) return "";
+      if (form.type === "embed" && form.embedCode) return `<div>${form.embedCode}</div>`;
+      const ff = (form.fields || []).map(f => `<div style="margin-bottom:${full?10:4}px"><input type="${f.type === "textarea" ? "text" : f.type || "text"}" placeholder="${f.placeholder}${f.required?" *":""}" style="width:100%;padding:${full?"8px 12px":"4px 7px"};border-radius:4px;border:1px solid #dee2e6;font-size:${full?13:8}px;background:#fff;color:#1a2535;box-sizing:border-box"></div>`).join("");
+      return `<div style="padding:${full?"20px 22px":"9px 10px"};background:rgba(255,255,255,0.13);border-radius:${full?8:5}px;backdrop-filter:blur(6px)">
+        ${form.title?`<h3 style="color:#fff;font-size:${full?18:10}px;font-weight:700;margin-bottom:${full?6:3}px">${form.title}</h3>`:""}
+        ${form.subtitle?`<p style="color:rgba(255,255,255,.8);font-size:${full?12:7}px;margin-bottom:${full?12:5}px">${form.subtitle}</p>`:""}
+        ${ff}
+        ${form.privacyText?`<p style="color:rgba(255,255,255,.65);font-size:${full?10:6}px;margin-bottom:${full?8:3}px">${form.privacyText}</p>`:""}
+        <button style="width:100%;padding:${full?"10px 0":"5px 0"};background:${form.btnColor||DARK};color:${form.btnTextColor||"#fff"};border:none;border-radius:${full?6:4}px;font-size:${full?14:8}px;font-weight:700;cursor:pointer">${form.btnText||"Enviar"}</button>
+      </div>`;
+    };
+    return `<div style="font-family:'Segoe UI',sans-serif;width:100%;position:relative;${bgImg?`background-image:url('${bgImg}');background-size:cover;background-position:center;`:`background:${d.header.bgColor};`}">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,${d.hero.overlay||0.5})"></div>
+      <div style="position:relative;z-index:2">
+        <div class="container-fluid" style="padding:${full?"28px 50px 22px":"14px 20px 10px"}">
+          <div class="row align-items-start g-2">
+            <div class="col-8 col-md-9">
+              <div style="display:flex;align-items:flex-start;gap:${full?18:10}px;flex-wrap:wrap">
+                ${d.header.logoUrl?`<img src="${d.header.logoUrl}" style="height:${full?80:48}px;object-fit:contain;border-radius:6px;background:rgba(255,255,255,0.15);padding:4px" alt="logo">`:`<div style="background:rgba(255,255,255,.2);border-radius:6px;padding:${full?"8px 14px":"5px 8px"};color:#fff;font-weight:700;font-size:${full?14:10}px;flex-shrink:0">${d.header.logoText}</div>`}
+                <h1 style="color:#fff;font-size:${full?52:20}px;font-weight:900;line-height:1.1;margin:0;max-width:${full?520:220}px">${u.heroTitle||"Es momento de llegar más lejos"}</h1>
+              </div>
+            </div>
+            <div class="col-4 col-md-3 text-end">
+              <div style="color:#fff;font-size:${full?12:7}px;opacity:.9;text-transform:uppercase;letter-spacing:2px">${u.admisionLabel||"Admisión"}</div>
+              <div style="color:#fff;font-size:${full?54:24}px;font-weight:900;line-height:1">${u.admisionYear||"2026"}</div>
+            </div>
           </div>
         </div>
-      </section>
-      <div style="display:grid;grid-template-columns:1fr 1fr;background:${u.contentBgColor||"rgba(15,25,45,0.82)"}">
-        <div style="padding:${full?"22px 28px":"10px 14px"}">
-          <div style="background:${u.programsBgColor||"#fff"};border-radius:${full?8:5}px;overflow:hidden">
-            <div style="background:${u.programsTitleBg||DARK};padding:${full?"10px 16px":"6px 10px"};text-align:center">
-              <div style="color:${u.programsTitleColor||"#fff"};font-size:${full?17:10}px;font-weight:700">${u.programsTitle||"Carreras y Programas"}</div>
+        <div class="container-fluid" style="padding:${full?"0 50px 32px":"0 20px 14px"}">
+          <div class="row g-3">
+            <div class="col-12 col-md-5">
+              <div style="background:${u.programsBgColor||"#fff"};border-radius:${full?8:5}px;overflow:hidden">
+                <div style="background:${u.programsTitleBg||DARK};padding:${full?"10px 16px":"6px 10px"};text-align:center">
+                  <div style="color:${u.programsTitleColor||"#fff"};font-size:${full?17:10}px;font-weight:700">${u.programsTitle||"Carreras y Programas"}</div>
+                </div>
+                <div style="padding:${full?"14px 18px":"7px 10px"}">
+                  ${(u.categories||[]).map(cat=>`<div style="margin-bottom:${full?12:5}px"><div style="font-size:${full?13:8}px;font-weight:700;color:${u.programsTextColor||DARK};margin-bottom:${full?5:2}px">${cat.name}</div><ul style="margin:0;padding-left:${full?16:10}px">${(cat.items||[]).map(item=>`<li style="font-size:${full?11:7}px;color:${u.programsTextColor||"#374151"};margin-bottom:${full?3:1}px;line-height:1.4">${item}</li>`).join("")}</ul></div>`).join("")}
+                  ${u.programsFooterText?`<div style="margin-top:${full?12:5}px;padding-top:${full?8:4}px;border-top:1px solid #e5e7eb;text-align:center;font-size:${full?11:7}px;font-weight:700;color:${u.programsFooterColor||DARK}">${u.programsFooterText}</div>`:""}
+                </div>
+              </div>
             </div>
-            <div style="padding:${full?"14px 18px":"7px 10px"}">
-              ${(u.categories||[]).map(cat=>`<div style="margin-bottom:${full?12:5}px"><div style="font-size:${full?13:8}px;font-weight:700;color:${u.programsTextColor||DARK};margin-bottom:${full?5:2}px">${cat.name}</div><ul style="margin:0;padding-left:${full?16:10}px">${(cat.items||[]).map(item=>`<li style="font-size:${full?11:7}px;color:${u.programsTextColor||"#374151"};margin-bottom:${full?3:1}px;line-height:1.4">${item}</li>`).join("")}</ul></div>`).join("")}
-              ${u.programsFooterText?`<div style="margin-top:${full?12:5}px;padding-top:${full?8:4}px;border-top:1px solid #e5e7eb;text-align:center;font-size:${full?11:7}px;font-weight:700;color:${u.programsFooterColor||DARK}">${u.programsFooterText}</div>`:""}
+            <div class="col-12 col-md-7">
+              ${unabForm(d.form)}
             </div>
           </div>
         </div>
-        <div style="padding:${full?"22px 28px":"10px 14px"};display:flex;align-items:flex-start">
-          <div style="width:100%">${formHTML(d.form, full)}</div>
+        <div style="background:${u.accreditationBgColor||DARK}">
+          <div class="container-fluid" style="padding:${full?"16px 50px":"8px 20px"}">
+            <div class="row justify-content-center align-items-center g-2 g-md-4">
+              ${(u.accreditations||[]).map(a=>`<div class="col-auto">${a.logoUrl?`<img src="${a.logoUrl}" style="height:${full?40:22}px;object-fit:contain">`:`<div style="color:#fff;text-align:center;font-size:${full?9:6}px;opacity:.85"><div style="font-size:${full?18:10}px;font-weight:900">${a.icon||""}</div>${a.text}</div>`}</div>`).join("")}
+            </div>
+          </div>
         </div>
       </div>
-      <footer style="background:${u.accreditationBgColor||DARK};padding:${full?"20px 50px":"10px 24px"};display:flex;align-items:center;justify-content:center;gap:${full?36:14}px;flex-wrap:wrap">
-        ${(u.accreditations||[]).map(a=>a.logoUrl?`<img src="${a.logoUrl}" style="height:${full?40:22}px;object-fit:contain">`:`<div style="color:#fff;text-align:center;font-size:${full?9:6}px;opacity:.85"><div style="font-size:${full?18:10}px;font-weight:900">${a.icon||""}</div>${a.text}</div>`).join("")}
-      </footer>
     </div>`;
   }
 
@@ -1414,27 +1436,25 @@ const LivePreview = ({ data }) => {
     const u = data.unab || {};
     const bgImg = slides[0] || "";
     return (
-      <div style={{ fontFamily: "'Segoe UI',sans-serif", width: "100%" }}>
-        {/* UNAB Header */}
-        <section style={{ position: "relative", minHeight: 110, background: bgImg ? `url(${bgImg}) center/cover no-repeat` : data.header.bgColor, overflow: "hidden" }}>
-          <div style={{ position: "absolute", inset: 0, background: `rgba(0,0,0,${data.hero.overlay || 0.45})` }} />
-          <div style={{ position: "relative", zIndex: 2, padding: "14px 24px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+      <div style={{ fontFamily: "'Segoe UI',sans-serif", width: "100%", position: "relative", backgroundImage: bgImg ? `url(${bgImg})` : "none", backgroundSize: "cover", backgroundPosition: "center", backgroundColor: bgImg ? undefined : data.header.bgColor }}>
+        <div style={{ position: "absolute", inset: 0, background: `rgba(0,0,0,${data.hero.overlay || 0.5})` }} />
+        <div style={{ position: "relative", zIndex: 2 }}>
+          {/* Header row */}
+          <div style={{ padding: "14px 20px 10px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10, flex: 1, minWidth: 0 }}>
               {data.header.logoUrl
-                ? <img src={data.header.logoUrl} style={{ height: 50, objectFit: "contain", borderRadius: 6, background: "rgba(255,255,255,0.15)", padding: 4 }} alt="logo" />
-                : <div style={{ background: "rgba(255,255,255,.2)", borderRadius: 6, padding: "5px 9px", color: "#fff", fontWeight: 700, fontSize: 10 }}>{data.header.logoText}</div>
+                ? <img src={data.header.logoUrl} style={{ height: 48, objectFit: "contain", borderRadius: 6, background: "rgba(255,255,255,0.15)", padding: 4, flexShrink: 0 }} alt="logo" />
+                : <div style={{ background: "rgba(255,255,255,.2)", borderRadius: 6, padding: "5px 9px", color: "#fff", fontWeight: 700, fontSize: 10, flexShrink: 0 }}>{data.header.logoText}</div>
               }
-              <h1 style={{ color: "#fff", fontSize: 22, fontWeight: 900, lineHeight: 1.1, maxWidth: 260, margin: 0 }}>{u.heroTitle || "Es momento de llegar más lejos"}</h1>
+              <h1 style={{ color: "#fff", fontSize: 20, fontWeight: 900, lineHeight: 1.1, margin: 0 }}>{u.heroTitle || "Es momento de llegar más lejos"}</h1>
             </div>
-            <div style={{ textAlign: "right" }}>
+            <div style={{ textAlign: "right", flexShrink: 0, paddingLeft: 8 }}>
               <div style={{ color: "#fff", fontSize: 7, opacity: .9, textTransform: "uppercase", letterSpacing: 2 }}>{u.admisionLabel || "Admisión"}</div>
-              <div style={{ color: "#fff", fontSize: 26, fontWeight: 900, lineHeight: 1 }}>{u.admisionYear || "2026"}</div>
+              <div style={{ color: "#fff", fontSize: 24, fontWeight: 900, lineHeight: 1 }}>{u.admisionYear || "2026"}</div>
             </div>
           </div>
-        </section>
-        {/* Programs + Form */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", background: u.contentBgColor || "rgba(15,25,45,0.82)" }}>
-          <div style={{ padding: "10px 14px" }}>
+          {/* Programs + Form */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", padding: "0 20px 14px", gap: 10 }}>
             <div style={{ background: u.programsBgColor || "#fff", borderRadius: 5, overflow: "hidden" }}>
               <div style={{ background: u.programsTitleBg || DARK, padding: "6px 10px", textAlign: "center" }}>
                 <div style={{ color: u.programsTitleColor || "#fff", fontSize: 10, fontWeight: 700 }}>{u.programsTitle || "Carreras y Programas"}</div>
@@ -1455,24 +1475,22 @@ const LivePreview = ({ data }) => {
                 )}
               </div>
             </div>
-          </div>
-          <div style={{ padding: "10px 14px", display: "flex", alignItems: "flex-start" }}>
-            <div style={{ width: "100%" }}>
+            <div style={{ background: "rgba(255,255,255,0.13)", borderRadius: 5, backdropFilter: "blur(6px)", padding: "9px 10px" }}>
               <ProForm form={data.form} compact={true} />
             </div>
           </div>
+          {/* Accreditations */}
+          <div style={{ background: u.accreditationBgColor || DARK, padding: "8px 20px", display: "flex", alignItems: "center", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+            {(u.accreditations || []).map((a, i) => (
+              a.logoUrl
+                ? <img key={i} src={a.logoUrl} style={{ height: 22, objectFit: "contain" }} alt={a.text} />
+                : <div key={i} style={{ color: "#fff", textAlign: "center", fontSize: 6, opacity: .85 }}>
+                    <div style={{ fontSize: 10, fontWeight: 900 }}>{a.icon}</div>
+                    <div>{a.text}</div>
+                  </div>
+            ))}
+          </div>
         </div>
-        {/* Accreditations */}
-        <footer style={{ background: u.accreditationBgColor || DARK, padding: "10px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
-          {(u.accreditations || []).map((a, i) => (
-            a.logoUrl
-              ? <img key={i} src={a.logoUrl} style={{ height: 22, objectFit: "contain" }} alt={a.text} />
-              : <div key={i} style={{ color: "#fff", textAlign: "center", fontSize: 6, opacity: .85 }}>
-                  <div style={{ fontSize: 10, fontWeight: 900 }}>{a.icon}</div>
-                  <div>{a.text}</div>
-                </div>
-          ))}
-        </footer>
       </div>
     );
   }
