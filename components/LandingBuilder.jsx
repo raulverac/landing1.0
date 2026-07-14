@@ -8,6 +8,19 @@ const DARK = "#1a2535";
 const SNAMES = ["Clásica", "Beneficios", "Storytelling", "Urgencia", "Profesional", "UNAB"];
 const SIDS = ["clasica", "beneficios", "storytelling", "urgencia", "profesional", "unab"];
 
+// Editor UI — DashboardKit design tokens
+const UI_PRIMARY = "#7267ef";
+const UI_BG = "#f0f2f8";
+const UI_CARD = "#ffffff";
+const UI_TEXT = "#293240";
+const UI_MUTED = "#5b6b79";
+const UI_BORDER = "#e9ecef";
+const UI_INPUT_BORDER = "#bec8d0";
+const UI_SHADOW = "0 2px 6px -1px rgba(0,0,0,0.1)";
+const UI_SHADOW_MD = "0 4px 14px -2px rgba(114,103,239,0.18)";
+const UI_RADIUS = 8;
+const UI_FONT = "'Inter','Segoe UI',system-ui,sans-serif";
+
 // ─── DEFAULT DATA ────────────────────────────────────────────────────────────
 const mkDefault = (struct = "clasica") => ({
   id: null,
@@ -622,47 +635,50 @@ const ColorRow = ({ label, value, onChange }) => {
     <div style={{ marginBottom: 7 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <input type="color" value={hex} onChange={e => onChange(rgbaOut(e.target.value, alpha))}
-          style={{ width: 28, height: 24, padding: 2, border: "1px solid #e5e7eb", borderRadius: 4, cursor: "pointer", flexShrink: 0 }} />
-        <span style={{ fontSize: 11, color: "#6b7280", flex: 1 }}>{label}</span>
-        <span style={{ fontSize: 10, color: "#9ca3af", width: 28, textAlign: "right", flexShrink: 0 }}>{Math.round(alpha * 100)}%</span>
+          style={{ width: 30, height: 26, padding: 2, border: `1px solid ${UI_INPUT_BORDER}`, borderRadius: 6, cursor: "pointer", flexShrink: 0 }} />
+        <span style={{ fontSize: 12, color: UI_TEXT, flex: 1, fontWeight: 500 }}>{label}</span>
+        <span style={{ fontSize: 10, color: UI_MUTED, width: 30, textAlign: "right", flexShrink: 0 }}>{Math.round(alpha * 100)}%</span>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3, paddingLeft: 34 }}>
-        <span style={{ fontSize: 9, color: "#d1d5db" }}>0</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4, paddingLeft: 38 }}>
+        <span style={{ fontSize: 9, color: UI_BORDER }}>0</span>
         <input type="range" min="0" max="100" value={Math.round(alpha * 100)}
           onChange={e => onChange(rgbaOut(hex, parseInt(e.target.value) / 100))}
-          style={{ flex: 1, height: 3, accentColor: "#6366f1", cursor: "pointer" }} />
-        <span style={{ fontSize: 9, color: "#d1d5db" }}>100</span>
+          style={{ flex: 1, height: 3, accentColor: UI_PRIMARY, cursor: "pointer" }} />
+        <span style={{ fontSize: 9, color: UI_BORDER }}>100</span>
       </div>
     </div>
   );
 };
 
+const inputStyle = { width: "100%", padding: "7px 10px", border: `1px solid ${UI_INPUT_BORDER}`, borderRadius: UI_RADIUS, fontSize: 12, outline: "none", color: UI_TEXT, background: UI_CARD, fontFamily: UI_FONT };
+const labelStyle = { fontSize: 10, color: UI_MUTED, fontWeight: 600, letterSpacing: ".4px", display: "block", marginBottom: 4 };
+
 const Field = ({ label, value, onChange, textarea, placeholder, type = "text" }) => (
-  <div style={{ marginBottom: 8 }}>
-    <label style={{ fontSize: 10, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".5px", display: "block", marginBottom: 2 }}>{label}</label>
+  <div style={{ marginBottom: 10 }}>
+    <label style={labelStyle}>{label}</label>
     {textarea
       ? <textarea value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-          style={{ width: "100%", padding: "4px 7px", border: "1px solid #e5e7eb", borderRadius: 5, fontSize: 11, resize: "vertical", minHeight: 52, outline: "none" }} />
+          style={{ ...inputStyle, resize: "vertical", minHeight: 56 }} />
       : <input type={type} value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-          style={{ width: "100%", padding: "4px 7px", border: "1px solid #e5e7eb", borderRadius: 5, fontSize: 11, outline: "none" }} />
+          style={inputStyle} />
     }
   </div>
 );
 
 const Select = ({ label, value, onChange, options }) => (
-  <div style={{ marginBottom: 8 }}>
-    <label style={{ fontSize: 10, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".5px", display: "block", marginBottom: 2 }}>{label}</label>
+  <div style={{ marginBottom: 10 }}>
+    <label style={labelStyle}>{label}</label>
     <select value={value || ""} onChange={e => onChange(e.target.value)}
-      style={{ width: "100%", padding: "4px 7px", border: "1px solid #e5e7eb", borderRadius: 5, fontSize: 11, outline: "none", background: "#fff" }}>
+      style={{ ...inputStyle, cursor: "pointer" }}>
       {options.map(o => <option key={o} value={o}>{o || "— seleccionar —"}</option>)}
     </select>
   </div>
 );
 
 const Panel = ({ title, children }) => (
-  <div style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 9, marginBottom: 9, overflow: "hidden" }}>
-    <div style={{ padding: "7px 11px", background: "#f9fafb", borderBottom: "1px solid #f0f0f0", fontSize: 12, fontWeight: 600, color: "#374151" }}>{title}</div>
-    <div style={{ padding: 11 }}>{children}</div>
+  <div style={{ background: UI_CARD, borderRadius: UI_RADIUS, marginBottom: 10, overflow: "hidden", boxShadow: UI_SHADOW }}>
+    <div style={{ padding: "9px 14px", borderBottom: `1px solid ${UI_BORDER}`, fontSize: 10, fontWeight: 700, color: UI_MUTED, letterSpacing: ".6px", textTransform: "uppercase" }}>{title}</div>
+    <div style={{ padding: "12px 14px" }}>{children}</div>
   </div>
 );
 
@@ -749,36 +765,35 @@ const StructureSelector = ({ selected, onSelect, onApply }) => {
     { id: "unab", num: 6, name: "Formato Universidad", desc: "Portada universitaria: logo + título, programas, formulario y acreditaciones.", pop: false },
   ];
   return (
-    <div style={{ flex: 1, overflow: "auto", background: "#f5f3ee", padding: 24 }}>
-      <div style={{ textAlign: "center", marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: DARK, marginBottom: 6 }}>Elige la estructura de tu landing</h1>
-        <p style={{ fontSize: 13, color: "#6b7280", maxWidth: 460, margin: "0 auto" }}>Selecciona la plantilla que mejor se adapte a tu objetivo. Podrás personalizar todo en el editor.</p>
+    <div style={{ flex: 1, overflow: "auto", background: UI_BG, padding: 28, fontFamily: UI_FONT }}>
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: UI_TEXT, marginBottom: 5 }}>Elige la estructura de tu landing</h1>
+        <p style={{ fontSize: 13, color: UI_MUTED, maxWidth: 480 }}>Selecciona la plantilla que mejor se adapte a tu objetivo. Podrás personalizar todo en el editor.</p>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(160px,1fr))", gap: 12, maxWidth: 980, margin: "0 auto" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(170px,1fr))", gap: 14, maxWidth: 1040, marginBottom: 24 }}>
         {structs.map((s, i) => (
           <div key={s.id} onClick={() => onSelect(i)}
-            style={{ background: "#fff", borderRadius: 12, border: `2px solid ${selected === i ? ACC : "#e5e7eb"}`, overflow: "hidden", cursor: "pointer", transition: "all .2s",
-              boxShadow: selected === i ? `0 0 0 3px ${ACC}38` : "none",
-              transform: selected === i ? "translateY(-2px)" : "none" }}>
-            <div style={{ padding: "12px 12px 6px" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 7, marginBottom: 5 }}>
-                <div style={{ width: 24, height: 24, borderRadius: "50%", background: ACC, color: DARK, fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{s.num}</div>
+            style={{ background: UI_CARD, borderRadius: UI_RADIUS + 2, border: `2px solid ${selected === i ? UI_PRIMARY : UI_BORDER}`, overflow: "hidden", cursor: "pointer", transition: "all .2s",
+              boxShadow: selected === i ? UI_SHADOW_MD : UI_SHADOW,
+              transform: selected === i ? "translateY(-3px)" : "none" }}>
+            <div style={{ padding: "13px 13px 7px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
+                <div style={{ width: 26, height: 26, borderRadius: 7, background: selected === i ? UI_PRIMARY : "#ede9ff", color: selected === i ? "#fff" : UI_PRIMARY, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{s.num}</div>
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: DARK }}>{s.name}</div>
-                  {s.pop && <span style={{ background: "#fef3c7", color: "#92400e", fontSize: 8, fontWeight: 600, padding: "1px 4px", borderRadius: 3 }}>Popular</span>}
+                  <div style={{ fontSize: 12, fontWeight: 700, color: UI_TEXT, lineHeight: 1.3 }}>{s.name}</div>
+                  {s.pop && <span style={{ background: "#fef3c7", color: "#92400e", fontSize: 8, fontWeight: 600, padding: "1px 5px", borderRadius: 20 }}>Popular</span>}
                 </div>
               </div>
-              <div style={{ fontSize: 10, color: "#6b7280", lineHeight: 1.45 }}>{s.desc}</div>
+              <div style={{ fontSize: 10, color: UI_MUTED, lineHeight: 1.5 }}>{s.desc}</div>
             </div>
-            {/* Mini wireframe */}
             <WireFrame id={s.id} />
           </div>
         ))}
       </div>
-      <div style={{ textAlign: "center", marginTop: 20 }}>
-        <p style={{ fontSize: 12, color: "#9ca3af", marginBottom: 10 }}>Seleccionada: <strong style={{ color: DARK }}>{structs[selected]?.name}</strong></p>
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <span style={{ fontSize: 13, color: UI_MUTED }}>Seleccionada: <strong style={{ color: UI_TEXT }}>{structs[selected]?.name}</strong></span>
         <button onClick={onApply}
-          style={{ padding: "10px 28px", borderRadius: 8, border: "none", background: ACC, color: DARK, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+          style={{ padding: "10px 28px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: UI_SHADOW_MD }}>
           Usar esta estructura y editar →
         </button>
       </div>
@@ -943,16 +958,23 @@ const EditorSidebar = ({ data, setData, onSave }) => {
   const utmStr = buildUTM(data.utm || {});
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", fontFamily: UI_FONT, background: UI_BG }}>
       {/* Name */}
-      <div style={{ padding: "9px 11px", borderBottom: "1px solid #f0f0f0" }}>
-        <label style={{ fontSize: 10, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".5px", display: "block", marginBottom: 2 }}>Nombre de la Landing</label>
+      <div style={{ padding: "12px 14px", borderBottom: `1px solid ${UI_BORDER}`, background: UI_CARD }}>
+        <label style={labelStyle}>Nombre de la Landing</label>
         <input value={data.name || ""} onChange={e => setData(d => ({ ...d, name: e.target.value }))}
-          style={{ width: "100%", padding: "5px 7px", border: "1px solid #e5e7eb", borderRadius: 6, fontSize: 12, outline: "none" }} />
+          style={inputStyle} />
       </div>
       {/* Tabs */}
-      <div style={{ display: "flex", gap: 3, padding: "6px 7px", borderBottom: "1px solid #f0f0f0", flexWrap: "wrap" }}>
-        {tabs.map(t => <button key={t.id} style={tabBtn(t)} onClick={() => setTab(t.id)}>{t.label}</button>)}
+      <div style={{ display: "flex", background: UI_CARD, borderBottom: `1px solid ${UI_BORDER}`, overflowX: "auto" }}>
+        {tabs.map(t => (
+          <button key={t.id} style={{
+            padding: "10px 11px", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 600,
+            background: "transparent", color: tab === t.id ? UI_PRIMARY : UI_MUTED, whiteSpace: "nowrap",
+            borderBottom: `2px solid ${tab === t.id ? UI_PRIMARY : "transparent"}`,
+            transition: "color .15s, border-color .15s",
+          }} onClick={() => setTab(t.id)}>{t.label}</button>
+        ))}
       </div>
       {/* Content */}
       <div style={{ flex: 1, overflowY: "auto", padding: 10 }}>
@@ -961,36 +983,36 @@ const EditorSidebar = ({ data, setData, onSave }) => {
           <Panel title="🏷 Logo y Colores">
             <Field label="Texto del Logo" value={data.header.logoText} onChange={v => upd("header", "logoText", v)} />
             <ImgField label="Logo (URL o subir imagen)" value={data.header.logoUrl} onChange={v => upd("header", "logoUrl", v)} />
-            <div style={{ marginBottom: 8 }}>
-              <label style={{ fontSize: 10, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".5px", display: "block", marginBottom: 4 }}>Tamaño del logo — {data.header.logoSize || 30}px</label>
+            <div style={{ marginBottom: 10 }}>
+              <label style={labelStyle}>Tamaño del logo — {data.header.logoSize || 30}px</label>
               <input type="range" min="16" max="120" value={data.header.logoSize || 30}
                 onChange={e => upd("header", "logoSize", parseInt(e.target.value))}
-                style={{ width: "100%", accentColor: "#6366f1", cursor: "pointer" }} />
+                style={{ width: "100%", accentColor: UI_PRIMARY, cursor: "pointer" }} />
             </div>
             <ColorRow label="Color de fondo" value={data.header.bgColor} onChange={v => upd("header", "bgColor", v)} />
             <ColorRow label="Color de texto" value={data.header.textColor} onChange={v => upd("header", "textColor", v)} />
           </Panel>
           <Panel title="🔗 Menú de Navegación">
             {(data.header.menu || []).map((m, i) => (
-              <div key={i} style={{ display: "flex", gap: 4, marginBottom: 6 }}>
+              <div key={i} style={{ display: "flex", gap: 5, marginBottom: 7 }}>
                 <input value={m.l} onChange={e => updArr("header", "menu", i, "l", e.target.value)} placeholder="Etiqueta"
-                  style={{ flex: 1, padding: "3px 6px", border: "1px solid #e5e7eb", borderRadius: 4, fontSize: 11, outline: "none" }} />
+                  style={{ flex: 1, padding: "6px 8px", border: `1px solid ${UI_INPUT_BORDER}`, borderRadius: 6, fontSize: 11, outline: "none", color: UI_TEXT }} />
                 <input value={m.h} onChange={e => updArr("header", "menu", i, "h", e.target.value)} placeholder="#seccion"
-                  style={{ flex: 1, padding: "3px 6px", border: "1px solid #e5e7eb", borderRadius: 4, fontSize: 11, outline: "none" }} />
+                  style={{ flex: 1, padding: "6px 8px", border: `1px solid ${UI_INPUT_BORDER}`, borderRadius: 6, fontSize: 11, outline: "none", color: UI_TEXT }} />
                 <button onClick={() => setData(d => ({ ...d, header: { ...d.header, menu: d.header.menu.filter((_, j) => j !== i) } }))}
-                  style={{ padding: "2px 6px", border: "1px solid #fca5a5", background: "#fff", color: "#ef4444", borderRadius: 3, cursor: "pointer", fontSize: 10 }}>✕</button>
+                  style={{ padding: "4px 8px", border: "none", background: "#fee2e2", color: "#ef4444", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 700 }}>✕</button>
               </div>
             ))}
             <button onClick={() => setData(d => ({ ...d, header: { ...d.header, menu: [...d.header.menu, { l: "Nuevo", h: "#" }] } }))}
-              style={{ padding: "4px 10px", borderRadius: 5, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 11, color: "#6b7280" }}>+ Agregar ítem</button>
+              style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 11, color: UI_PRIMARY, fontWeight: 600 }}>+ Agregar ítem</button>
           </Panel>
         </>}
 
         {tab === "hero" && <>
           <Panel title="🖼 Carrusel — 3 slides">
             {[0, 1, 2].map(i => (
-              <div key={i} style={{ marginBottom: 8, padding: 8, background: "#f9fafb", borderRadius: 6 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 4, color: "#374151" }}>Slide {i + 1}</div>
+              <div key={i} style={{ marginBottom: 8, padding: 10, background: UI_BG, borderRadius: UI_RADIUS }}>
+                <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 6, color: UI_TEXT }}>Slide {i + 1}</div>
                 <ImgField value={data.hero.slides[i] || ""} onChange={v => setData(d => { const sl = [...d.hero.slides]; sl[i] = v; return { ...d, hero: { ...d.hero, slides: sl } }; })} />
               </div>
             ))}
@@ -1001,11 +1023,11 @@ const EditorSidebar = ({ data, setData, onSave }) => {
             <Field label="Texto del Botón" value={data.hero.btnText} onChange={v => upd("hero", "btnText", v)} />
             <Field label="Enlace del Botón" value={data.hero.btnHref} onChange={v => upd("hero", "btnHref", v)} />
             <ColorRow label="Color del Botón" value={data.hero.btnColor} onChange={v => upd("hero", "btnColor", v)} />
-            <div style={{ marginBottom: 8 }}>
-              <label style={{ fontSize: 10, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".5px", display: "block", marginBottom: 2 }}>Overlay: {Math.round(data.hero.overlay * 100)}%</label>
+            <div style={{ marginBottom: 10 }}>
+              <label style={labelStyle}>Overlay oscuro — {Math.round(data.hero.overlay * 100)}%</label>
               <input type="range" min={0} max={1} step={0.05} value={data.hero.overlay}
                 onChange={e => upd("hero", "overlay", parseFloat(e.target.value))}
-                style={{ width: "100%", accentColor: ACC }} />
+                style={{ width: "100%", accentColor: UI_PRIMARY, cursor: "pointer" }} />
             </div>
           </Panel>
         </>}
@@ -1020,16 +1042,16 @@ const EditorSidebar = ({ data, setData, onSave }) => {
           </Panel>
           <Panel title="🃏 Tarjetas">
             {data.services.cards.map((c, i) => (
-              <div key={i} style={{ padding: 8, background: "#f9fafb", borderRadius: 6, marginBottom: 7 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontSize: 11, fontWeight: 600 }}>
+              <div key={i} style={{ padding: 10, background: UI_BG, borderRadius: UI_RADIUS, marginBottom: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, fontSize: 11, fontWeight: 700, color: UI_TEXT }}>
                   Servicio {i + 1}
                   <button onClick={() => setData(d => ({ ...d, services: { ...d.services, cards: d.services.cards.filter((_, j) => j !== i) } }))}
-                    style={{ padding: "1px 5px", border: "1px solid #fca5a5", background: "#fff", color: "#ef4444", borderRadius: 3, cursor: "pointer", fontSize: 10 }}>✕</button>
+                    style={{ padding: "3px 7px", border: "none", background: "#fee2e2", color: "#ef4444", borderRadius: 5, cursor: "pointer", fontSize: 11, fontWeight: 700 }}>✕</button>
                 </div>
                 <input value={c.title} onChange={e => updArr("services", "cards", i, "title", e.target.value)} placeholder="Título"
-                  style={{ width: "100%", padding: "3px 6px", border: "1px solid #e5e7eb", borderRadius: 4, fontSize: 11, marginBottom: 4, outline: "none" }} />
+                  style={{ ...inputStyle, marginBottom: 6 }} />
                 <textarea value={c.desc} onChange={e => updArr("services", "cards", i, "desc", e.target.value)} rows={2}
-                  style={{ width: "100%", padding: "3px 6px", border: "1px solid #e5e7eb", borderRadius: 4, fontSize: 11, resize: "none", outline: "none" }} />
+                  style={{ ...inputStyle, resize: "none" }} />
               </div>
             ))}
             <button onClick={() => setData(d => ({ ...d, services: { ...d.services, cards: [...d.services.cards, { icon: "⭐", title: "Nuevo", desc: "Descripción." }] } }))}
@@ -1830,42 +1852,42 @@ const LivePreview = ({ data }) => {
 
 // ─── LANDINGS LIST PAGE ───────────────────────────────────────────────────────
 const LandingsList = ({ landings, onNew, onEdit, onPreview, onDelete, onDownload }) => (
-  <div style={{ flex: 1, overflow: "auto", padding: 24 }}>
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+  <div style={{ flex: 1, overflow: "auto", padding: 28, background: UI_BG, fontFamily: UI_FONT }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
       <div>
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#111", marginBottom: 2 }}>Landings Creadas</h2>
-        <p style={{ fontSize: 12, color: "#9ca3af" }}>{landings.length} landing{landings.length !== 1 ? "s" : ""} guardada{landings.length !== 1 ? "s" : ""}</p>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: UI_TEXT, marginBottom: 3 }}>Landings Creadas</h2>
+        <p style={{ fontSize: 12, color: UI_MUTED }}>{landings.length} landing{landings.length !== 1 ? "s" : ""} guardada{landings.length !== 1 ? "s" : ""}</p>
       </div>
-      <button onClick={onNew} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: ACC, color: DARK, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>+ Nueva Landing</button>
+      <button onClick={onNew} style={{ padding: "9px 20px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: UI_SHADOW_MD }}>+ Nueva Landing</button>
     </div>
     {landings.length === 0 ? (
-      <div style={{ textAlign: "center", padding: "60px 40px", background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", color: "#9ca3af" }}>
-        <div style={{ fontSize: 40, marginBottom: 12, opacity: .3 }}>🗂</div>
-        <p style={{ marginBottom: 12 }}>No hay landings creadas aún.</p>
-        <button onClick={onNew} style={{ padding: "8px 20px", borderRadius: 7, border: "none", background: ACC, color: DARK, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Crear primera landing</button>
+      <div style={{ textAlign: "center", padding: "60px 40px", background: UI_CARD, borderRadius: UI_RADIUS + 4, boxShadow: UI_SHADOW, color: UI_MUTED }}>
+        <div style={{ fontSize: 44, marginBottom: 14, opacity: .25 }}>🗂</div>
+        <p style={{ marginBottom: 14, fontSize: 14 }}>No hay landings creadas aún.</p>
+        <button onClick={onNew} style={{ padding: "9px 22px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Crear primera landing</button>
       </div>
     ) : (
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(210px,1fr))", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 16 }}>
         {landings.map(l => {
           const utm = buildUTM(l.utm || {});
           return (
-            <div key={l.id} style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", overflow: "hidden" }}>
-              <div onClick={() => onPreview(l.id)} style={{ height: 100, position: "relative", cursor: "pointer", background: l.header.bgColor, overflow: "hidden" }}>
-                {l.hero.slides?.[0] && <img src={l.hero.slides[0]} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: .45 }} />}
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.42)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 8 }}>
+            <div key={l.id} style={{ background: UI_CARD, borderRadius: UI_RADIUS + 2, boxShadow: UI_SHADOW, overflow: "hidden" }}>
+              <div onClick={() => onPreview(l.id)} style={{ height: 110, position: "relative", cursor: "pointer", background: l.header.bgColor, overflow: "hidden" }}>
+                {l.hero.slides?.[0] && <img src={l.hero.slides[0]} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: .5 }} />}
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.44)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 10 }}>
                   <div style={{ color: "#fff", fontWeight: 700, fontSize: 13, textAlign: "center" }}>{l.name}</div>
-                  <div style={{ background: `rgba(230,168,23,.9)`, color: DARK, fontSize: 9, fontWeight: 600, padding: "1px 6px", borderRadius: 3, marginTop: 3 }}>
+                  <span style={{ background: UI_PRIMARY, color: "#fff", fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 20, marginTop: 5 }}>
                     {SNAMES[SIDS.indexOf(l.struct || "clasica")] || "Clásica"}
-                  </div>
-                  {utm && <div style={{ background: "rgba(34,197,94,.85)", color: "#fff", fontSize: 8, padding: "1px 5px", borderRadius: 3, marginTop: 2 }}>UTM ✓</div>}
+                  </span>
+                  {utm && <span style={{ background: "#22c55e", color: "#fff", fontSize: 8, padding: "1px 6px", borderRadius: 20, marginTop: 3 }}>UTM ✓</span>}
                 </div>
-                <div style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,.5)", color: "#fff", fontSize: 9, padding: "1px 4px", borderRadius: 3 }}>{l.createdAt || ""}</div>
+                <div style={{ position: "absolute", top: 7, right: 7, background: "rgba(0,0,0,.5)", color: "#fff", fontSize: 9, padding: "2px 5px", borderRadius: 5 }}>{l.createdAt || ""}</div>
               </div>
-              <div style={{ padding: "7px 9px", display: "flex", gap: 4 }}>
-                <button onClick={() => onPreview(l.id)} style={{ flex: 1, padding: "5px 0", borderRadius: 5, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 10, fontWeight: 500 }}>👁 Vista</button>
-                <button onClick={() => onEdit(l.id)} style={{ flex: 1, padding: "5px 0", borderRadius: 5, border: "1px solid #93c5fd", color: "#3b82f6", background: "#fff", cursor: "pointer", fontSize: 10, fontWeight: 500 }}>✏️ Editar</button>
-                <button onClick={() => onDownload(l.id)} style={{ flex: 1, padding: "5px 0", borderRadius: 5, border: "1px solid #86efac", color: "#22c55e", background: "#fff", cursor: "pointer", fontSize: 10, fontWeight: 500 }}>↓ HTML</button>
-                <button onClick={() => onDelete(l.id)} style={{ padding: "5px 8px", borderRadius: 5, border: "1px solid #fca5a5", color: "#ef4444", background: "#fff", cursor: "pointer", fontSize: 10 }}>🗑</button>
+              <div style={{ padding: "8px 10px", display: "flex", gap: 5 }}>
+                <button onClick={() => onPreview(l.id)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 10, fontWeight: 600, color: UI_MUTED }}>Vista</button>
+                <button onClick={() => onEdit(l.id)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: "none", background: "#ede9ff", color: UI_PRIMARY, cursor: "pointer", fontSize: 10, fontWeight: 700 }}>Editar</button>
+                <button onClick={() => onDownload(l.id)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: "none", background: "#dcfce7", color: "#16a34a", cursor: "pointer", fontSize: 10, fontWeight: 700 }}>HTML</button>
+                <button onClick={() => onDelete(l.id)} style={{ padding: "6px 10px", borderRadius: 6, border: "none", background: "#fee2e2", color: "#ef4444", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>✕</button>
               </div>
             </div>
           );
@@ -1942,30 +1964,31 @@ export default function LandingBuilder() {
   }, [selStruct]);
 
   const topBtnStyle = (active) => ({
-    padding: "5px 11px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 500,
-    display: "flex", alignItems: "center", gap: 4, transition: "all .15s",
-    background: active ? ACC : "transparent", color: active ? DARK : "#6b7280",
+    padding: "7px 14px", borderRadius: UI_RADIUS, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600,
+    display: "flex", alignItems: "center", gap: 5, transition: "all .15s",
+    background: active ? "#ede9ff" : "transparent", color: active ? UI_PRIMARY : UI_MUTED,
   });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", minHeight: 700, background: "#f0f2f5", fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", minHeight: 700, background: UI_BG, fontFamily: UI_FONT }}>
       {/* TOP NAV */}
-      <div style={{ height: 52, background: "#fff", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", padding: "0 14px", gap: 6, flexShrink: 0, zIndex: 100 }}>
-        <div style={{ width: 28, height: 28, borderRadius: 7, background: ACC, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <span style={{ color: DARK, fontWeight: 700, fontSize: 13 }}>L</span>
+      <div style={{ height: 58, background: UI_CARD, boxShadow: UI_SHADOW, display: "flex", alignItems: "center", padding: "0 18px", gap: 6, flexShrink: 0, zIndex: 100 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 9, background: UI_PRIMARY, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: UI_SHADOW_MD }}>
+          <span style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>L</span>
         </div>
-        <span style={{ fontWeight: 700, fontSize: 15, color: "#111", marginRight: 6 }}>LandingBuilder</span>
-        <button style={topBtnStyle(page === "struct")} onClick={() => setPage("struct")}>🗂 Estructura</button>
-        <button style={topBtnStyle(page === "editor")} onClick={() => setPage("editor")}>✏️ Editor</button>
-        <button style={topBtnStyle(page === "list")} onClick={() => setPage("list")}>📋 Landings Creadas</button>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 5 }}>
+        <span style={{ fontWeight: 700, fontSize: 16, color: UI_TEXT, marginRight: 10 }}>LandingBuilder</span>
+        <div style={{ width: 1, height: 22, background: UI_BORDER, margin: "0 4px" }} />
+        <button style={topBtnStyle(page === "struct")} onClick={() => setPage("struct")}>Estructura</button>
+        <button style={topBtnStyle(page === "editor")} onClick={() => setPage("editor")}>Editor</button>
+        <button style={topBtnStyle(page === "list")} onClick={() => setPage("list")}>Mis Landings</button>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 7 }}>
           {page !== "preview" && <>
-            <button onClick={newLanding} style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}>+ Nueva</button>
-            <button onClick={() => doPreview(null)} style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}>👁 Vista Previa</button>
-            <button onClick={() => doSave()} style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: "#22c55e", color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>💾 Guardar Landing</button>
-            <button onClick={() => doDownload(null)} style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: ACC, color: DARK, cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>↓ HTML</button>
+            <button onClick={newLanding} style={{ padding: "7px 14px", borderRadius: UI_RADIUS, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 12, fontWeight: 600, color: UI_MUTED }}>+ Nueva</button>
+            <button onClick={() => doPreview(null)} style={{ padding: "7px 14px", borderRadius: UI_RADIUS, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 12, fontWeight: 600, color: UI_MUTED }}>Vista Previa</button>
+            <button onClick={() => doSave()} style={{ padding: "7px 16px", borderRadius: UI_RADIUS, border: "none", background: "#22c55e", color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 700, boxShadow: "0 2px 8px rgba(34,197,94,.3)" }}>Guardar</button>
+            <button onClick={() => doDownload(null)} style={{ padding: "7px 16px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 700, boxShadow: UI_SHADOW_MD }}>↓ HTML</button>
           </>}
-          {page === "preview" && <button onClick={() => setPage("editor")} style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 12 }}>← Volver</button>}
+          {page === "preview" && <button onClick={() => setPage("editor")} style={{ padding: "7px 14px", borderRadius: UI_RADIUS, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 12, fontWeight: 600, color: UI_MUTED }}>← Volver</button>}
         </div>
       </div>
 
@@ -1978,19 +2001,19 @@ export default function LandingBuilder() {
 
       {page === "editor" && (
         <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-          {/* Sidebar */}
-          <div style={{ width: 276, flexShrink: 0, background: "#fff", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          {/* Sidebar editor */}
+          <div style={{ width: 288, flexShrink: 0, background: UI_BG, borderRight: `1px solid ${UI_BORDER}`, display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <EditorSidebar data={current} setData={setCurrent} onSave={() => doSave()} />
           </div>
           {/* Preview */}
-          <div style={{ flex: 1, background: "#e0e2e6", overflow: "auto", display: "flex", flexDirection: "column", alignItems: "center", padding: 16 }}>
-            <div style={{ fontSize: 10, color: "#9ca3af", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-              Vista Previa — <span style={{ color: ACC, fontWeight: 600 }}>{SNAMES[SIDS.indexOf(current.struct || "clasica")] || "Clásica"}</span>
+          <div style={{ flex: 1, background: UI_BG, overflow: "auto", display: "flex", flexDirection: "column", alignItems: "center", padding: 20 }}>
+            <div style={{ fontSize: 11, color: UI_MUTED, fontWeight: 600, letterSpacing: ".5px", textTransform: "uppercase", marginBottom: 10 }}>
+              Vista Previa — <span style={{ color: UI_PRIMARY }}>{SNAMES[SIDS.indexOf(current.struct || "clasica")] || "Clásica"}</span>
             </div>
-            <div style={{ background: "#fff", borderRadius: 9, overflow: "hidden", boxShadow: "0 4px 22px rgba(0,0,0,.13)", width: "100%", maxWidth: 580 }}>
+            <div style={{ background: UI_CARD, borderRadius: UI_RADIUS + 2, overflow: "hidden", boxShadow: "0 4px 24px rgba(114,103,239,.12)", width: "100%", maxWidth: 580 }}>
               <LivePreview data={current} />
             </div>
-            <p style={{ fontSize: 10, color: "#bbb", marginTop: 8 }}>Los cambios se reflejan al instante</p>
+            <p style={{ fontSize: 11, color: UI_MUTED, marginTop: 10, opacity: .7 }}>Los cambios se reflejan al instante</p>
           </div>
         </div>
       )}
@@ -2007,13 +2030,13 @@ export default function LandingBuilder() {
       )}
 
       {page === "preview" && previewData && (
-        <div style={{ flex: 1, overflow: "auto", background: "#2c2c2c", display: "flex", flexDirection: "column" }}>
-          <div style={{ background: "#111", padding: "8px 16px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <button onClick={() => setPage("editor")} style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #444", color: "#ccc", background: "transparent", cursor: "pointer", fontSize: 12 }}>← Volver</button>
-            <span style={{ color: "#999", fontSize: 12 }}>{previewData.name}</span>
-            <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
-              <button onClick={() => doSave(previewData)} style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: "#22c55e", color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>💾 Guardar Landing</button>
-              <button onClick={() => doDownload(previewData.id)} style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: ACC, color: DARK, cursor: "pointer", fontSize: 12, fontWeight: 600 }}>↓ Descargar HTML</button>
+        <div style={{ flex: 1, overflow: "auto", background: "#1e1e2e", display: "flex", flexDirection: "column" }}>
+          <div style={{ background: "#16162a", padding: "10px 18px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
+            <button onClick={() => setPage("editor")} style={{ padding: "6px 14px", borderRadius: UI_RADIUS, border: "1px solid rgba(255,255,255,.15)", color: "#a0a0c0", background: "transparent", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>← Volver</button>
+            <span style={{ color: "#7070a0", fontSize: 12, fontWeight: 500 }}>{previewData.name}</span>
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+              <button onClick={() => doSave(previewData)} style={{ padding: "7px 16px", borderRadius: UI_RADIUS, border: "none", background: "#22c55e", color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 700 }}>Guardar</button>
+              <button onClick={() => doDownload(previewData.id)} style={{ padding: "7px 16px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 700 }}>↓ HTML</button>
             </div>
           </div>
           <div style={{ background: "#fff" }}>
