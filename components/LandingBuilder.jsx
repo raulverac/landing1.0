@@ -2005,15 +2005,17 @@ export default function LandingBuilder() {
           <div style={{ width: 288, flexShrink: 0, background: UI_BG, borderRight: `1px solid ${UI_BORDER}`, display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <EditorSidebar data={current} setData={setCurrent} onSave={() => doSave()} />
           </div>
-          {/* Preview */}
-          <div style={{ flex: 1, background: UI_BG, overflow: "auto", display: "flex", flexDirection: "column", alignItems: "center", padding: 20 }}>
-            <div style={{ fontSize: 11, color: UI_MUTED, fontWeight: 600, letterSpacing: ".5px", textTransform: "uppercase", marginBottom: 10 }}>
-              Vista Previa — <span style={{ color: UI_PRIMARY }}>{SNAMES[SIDS.indexOf(current.struct || "clasica")] || "Clásica"}</span>
+          {/* Preview — scrollable outer, centered inner */}
+          <div style={{ flex: 1, overflowY: "auto", background: UI_BG, minHeight: 0 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 20, minHeight: "100%" }}>
+              <div style={{ fontSize: 11, color: UI_MUTED, fontWeight: 600, letterSpacing: ".5px", textTransform: "uppercase", marginBottom: 10 }}>
+                Vista Previa — <span style={{ color: UI_PRIMARY }}>{SNAMES[SIDS.indexOf(current.struct || "clasica")] || "Clásica"}</span>
+              </div>
+              <div style={{ background: UI_CARD, borderRadius: UI_RADIUS + 2, overflow: "hidden", boxShadow: "0 4px 24px rgba(114,103,239,.12)", width: "100%", maxWidth: 580 }}>
+                <LivePreview data={current} />
+              </div>
+              <p style={{ fontSize: 11, color: UI_MUTED, marginTop: 10, opacity: .7 }}>Los cambios se reflejan al instante</p>
             </div>
-            <div style={{ background: UI_CARD, borderRadius: UI_RADIUS + 2, overflow: "hidden", boxShadow: "0 4px 24px rgba(114,103,239,.12)", width: "100%", maxWidth: 580 }}>
-              <LivePreview data={current} />
-            </div>
-            <p style={{ fontSize: 11, color: UI_MUTED, marginTop: 10, opacity: .7 }}>Los cambios se reflejan al instante</p>
           </div>
         </div>
       )}
