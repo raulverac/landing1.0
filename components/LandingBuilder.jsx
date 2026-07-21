@@ -49,10 +49,10 @@ const mkDefault = (struct = "clasica") => ({
     title: "Nuestros Servicios", subtitle: "Todo lo que necesitas para crecer",
     bgColor: "#f8f9fa", titleColor: DARK, cardBg: "#ffffff", accent: ACC,
     cards: [
-      { icon: "🚀", title: "Estrategia", desc: "Planificamos el camino al éxito." },
-      { icon: "🎨", title: "Diseño", desc: "Creamos experiencias visuales memorables." },
-      { icon: "📈", title: "Crecimiento", desc: "Potenciamos tus métricas." },
-      { icon: "🛡", title: "Seguridad", desc: "Protegemos tu negocio." },
+      { icon: "🚀", title: "Estrategia", desc: "Planificamos el camino al éxito.", imgUrl: "", titleSize: 14, descSize: 12 },
+      { icon: "🎨", title: "Diseño", desc: "Creamos experiencias visuales memorables.", imgUrl: "", titleSize: 14, descSize: 12 },
+      { icon: "📈", title: "Crecimiento", desc: "Potenciamos tus métricas.", imgUrl: "", titleSize: 14, descSize: 12 },
+      { icon: "🛡", title: "Seguridad", desc: "Protegemos tu negocio.", imgUrl: "", titleSize: 14, descSize: 12 },
     ],
   },
   benefits: {
@@ -288,10 +288,13 @@ const buildPreviewHTML = (d, full = false) => {
         <p style="color:${d.services.titleColor};opacity:.6;font-size:${full ? 15 : 10}px">${d.services.subtitle}</p>
       </div>
       <div style="display:grid;grid-template-columns:repeat(${Math.min(d.services.cards.length, 4)},1fr);gap:${full ? 16 : 8}px">
-        ${d.services.cards.map(c => `<div style="background:${d.services.cardBg};border-radius:9px;padding:${full ? 20 : 10}px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.06)">
-          <div style="font-size:${full ? 24 : 16}px;margin-bottom:8px">${c.icon}</div>
-          <div style="color:${d.services.titleColor};font-weight:600;font-size:${full ? 13 : 10}px;margin-bottom:4px">${c.title}</div>
-          <div style="color:${d.services.titleColor};opacity:.6;font-size:${full ? 11 : 9}px;line-height:1.5">${c.desc}</div>
+        ${d.services.cards.map(c => `<div style="background:${d.services.cardBg};border-radius:9px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06)">
+          ${c.imgUrl ? `<img src="${c.imgUrl}" style="width:100%;height:${full?150:90}px;object-fit:cover;display:block">` : ""}
+          <div style="padding:${full ? 20 : 10}px;text-align:center">
+            ${!c.imgUrl ? `<div style="font-size:${full ? 26 : 18}px;margin-bottom:8px">${c.icon}</div>` : ""}
+            <div style="color:${d.services.titleColor};font-weight:600;font-size:${full ? (c.titleSize||14) : Math.round((c.titleSize||14)*0.75)}px;margin-bottom:4px">${c.title}</div>
+            <div style="color:${d.services.titleColor};opacity:.6;font-size:${full ? (c.descSize||12) : Math.round((c.descSize||12)*0.78)}px;line-height:1.5">${c.desc}</div>
+          </div>
         </div>`).join("")}
       </div>
     </section>`;
@@ -1051,11 +1054,26 @@ const EditorSidebar = ({ data, setData, onSave }) => {
                 <input value={c.title} onChange={e => updArr("services", "cards", i, "title", e.target.value)} placeholder="Título"
                   style={{ ...inputStyle, marginBottom: 6 }} />
                 <textarea value={c.desc} onChange={e => updArr("services", "cards", i, "desc", e.target.value)} rows={2}
-                  style={{ ...inputStyle, resize: "none" }} />
+                  style={{ ...inputStyle, resize: "none", marginBottom: 6 }} />
+                <ImgField label="Imagen rectangular (opcional)" value={c.imgUrl || ""} onChange={v => updArr("services", "cards", i, "imgUrl", v)} />
+                <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>Título — {c.titleSize || 14}px</label>
+                    <input type="range" min="10" max="32" value={c.titleSize || 14}
+                      onChange={e => updArr("services", "cards", i, "titleSize", parseInt(e.target.value))}
+                      style={{ width: "100%", accentColor: UI_PRIMARY, cursor: "pointer" }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>Texto — {c.descSize || 12}px</label>
+                    <input type="range" min="8" max="24" value={c.descSize || 12}
+                      onChange={e => updArr("services", "cards", i, "descSize", parseInt(e.target.value))}
+                      style={{ width: "100%", accentColor: UI_PRIMARY, cursor: "pointer" }} />
+                  </div>
+                </div>
               </div>
             ))}
-            <button onClick={() => setData(d => ({ ...d, services: { ...d.services, cards: [...d.services.cards, { icon: "⭐", title: "Nuevo", desc: "Descripción." }] } }))}
-              style={{ padding: "4px 10px", borderRadius: 5, border: "1px solid #e5e7eb", background: "#fff", cursor: "pointer", fontSize: 11, color: "#6b7280" }}>+ Agregar servicio</button>
+            <button onClick={() => setData(d => ({ ...d, services: { ...d.services, cards: [...d.services.cards, { icon: "⭐", title: "Nuevo", desc: "Descripción.", imgUrl: "", titleSize: 14, descSize: 12 }] } }))}
+              style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 11, color: UI_PRIMARY, fontWeight: 600 }}>+ Agregar servicio</button>
           </Panel>
         </>}
 
@@ -1603,10 +1621,13 @@ const LivePreview = ({ data }) => {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(data.services.cards.length, 4)},1fr)`, gap: 8 }}>
             {data.services.cards.map((c, i) => (
-              <div key={i} style={{ background: data.services.cardBg, borderRadius: 9, padding: 10, textAlign: "center", boxShadow: "0 2px 10px rgba(0,0,0,.06)" }}>
-                <div style={{ fontSize: 16, marginBottom: 6 }}>{c.icon}</div>
-                <div style={{ color: data.services.titleColor, fontWeight: 600, fontSize: 10, marginBottom: 3 }}>{c.title}</div>
-                <div style={{ color: data.services.titleColor, opacity: .6, fontSize: 9, lineHeight: 1.5 }}>{c.desc}</div>
+              <div key={i} style={{ background: data.services.cardBg, borderRadius: 9, overflow: "hidden", boxShadow: "0 2px 10px rgba(0,0,0,.06)" }}>
+                {c.imgUrl && <img src={c.imgUrl} alt={c.title} style={{ width: "100%", height: 80, objectFit: "cover", display: "block" }} />}
+                <div style={{ padding: 10, textAlign: "center" }}>
+                  {!c.imgUrl && <div style={{ fontSize: 16, marginBottom: 6 }}>{c.icon}</div>}
+                  <div style={{ color: data.services.titleColor, fontWeight: 600, fontSize: Math.round((c.titleSize || 14) * 0.75), marginBottom: 3 }}>{c.title}</div>
+                  <div style={{ color: data.services.titleColor, opacity: .6, fontSize: Math.round((c.descSize || 12) * 0.78), lineHeight: 1.5 }}>{c.desc}</div>
+                </div>
               </div>
             ))}
           </div>
