@@ -768,32 +768,50 @@ const StructureSelector = ({ selected, onSelect, onApply }) => {
     { id: "unab", num: 6, name: "Formato Universidad", desc: "Portada universitaria: logo + título, programas, formulario y acreditaciones.", pop: false },
   ];
   return (
-    <div style={{ flex: 1, overflow: "auto", background: UI_BG, padding: 28, fontFamily: UI_FONT }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: UI_TEXT, marginBottom: 5 }}>Elige la estructura de tu landing</h1>
-        <p style={{ fontSize: 13, color: UI_MUTED, maxWidth: 480 }}>Selecciona la plantilla que mejor se adapte a tu objetivo. Podrás personalizar todo en el editor.</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(170px,1fr))", gap: 14, maxWidth: 1040, marginBottom: 24 }}>
-        {structs.map((s, i) => (
-          <div key={s.id} onClick={() => onSelect(i)}
-            style={{ background: UI_CARD, borderRadius: UI_RADIUS + 2, border: `2px solid ${selected === i ? UI_PRIMARY : UI_BORDER}`, overflow: "hidden", cursor: "pointer", transition: "all .2s",
-              boxShadow: selected === i ? UI_SHADOW_MD : UI_SHADOW,
-              transform: selected === i ? "translateY(-3px)" : "none" }}>
-            <div style={{ padding: "13px 13px 7px" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
-                <div style={{ width: 26, height: 26, borderRadius: 7, background: selected === i ? UI_PRIMARY : "#ede9ff", color: selected === i ? "#fff" : UI_PRIMARY, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{s.num}</div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: UI_TEXT, lineHeight: 1.3 }}>{s.name}</div>
-                  {s.pop && <span style={{ background: "#fef3c7", color: "#92400e", fontSize: 8, fontWeight: 600, padding: "1px 5px", borderRadius: 20 }}>Popular</span>}
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: UI_BG, fontFamily: UI_FONT, overflow: "hidden" }}>
+      {/* Scrollable content */}
+      <div style={{ flex: 1, overflow: "auto", padding: "28px 28px 80px" }}>
+        <div style={{ marginBottom: 20 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: UI_TEXT, marginBottom: 5 }}>Elige la estructura de tu landing</h1>
+          <p style={{ fontSize: 13, color: UI_MUTED, maxWidth: 480 }}>Selecciona la plantilla que mejor se adapte a tu objetivo. Podrás personalizar todo en el editor.</p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, minmax(0, 1fr))", gap: 12 }}>
+          {structs.map((s, i) => (
+            <div key={s.id} onClick={() => onSelect(i)}
+              style={{ background: UI_CARD, borderRadius: UI_RADIUS + 2, border: `2px solid ${selected === i ? UI_PRIMARY : UI_BORDER}`, overflow: "hidden", cursor: "pointer", transition: "all .2s",
+                boxShadow: selected === i ? UI_SHADOW_MD : UI_SHADOW,
+                transform: selected === i ? "translateY(-3px)" : "none" }}>
+              <div style={{ padding: "13px 13px 7px" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
+                  <div style={{ width: 26, height: 26, borderRadius: 7, background: selected === i ? UI_PRIMARY : "#ede9ff", color: selected === i ? "#fff" : UI_PRIMARY, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{s.num}</div>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: UI_TEXT, lineHeight: 1.3 }}>{s.name}</div>
+                    {s.pop && <span style={{ background: "#fef3c7", color: "#92400e", fontSize: 8, fontWeight: 600, padding: "1px 5px", borderRadius: 20 }}>Popular</span>}
+                  </div>
                 </div>
+                <div style={{ fontSize: 10, color: UI_MUTED, lineHeight: 1.5 }}>{s.desc}</div>
               </div>
-              <div style={{ fontSize: 10, color: UI_MUTED, lineHeight: 1.5 }}>{s.desc}</div>
+              <WireFrame id={s.id} />
             </div>
-            <WireFrame id={s.id} />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      {/* Floating bar overlaid on templates */}
+      <div style={{
+        flexShrink: 0,
+        marginTop: -60,
+        position: "relative",
+        zIndex: 10,
+        padding: "14px 28px",
+        background: "rgba(240,242,248,0.88)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        boxShadow: "0 -8px 32px rgba(114,103,239,0.13)",
+        borderTop: `1px solid rgba(233,236,239,0.7)`,
+        display: "flex",
+        alignItems: "center",
+        gap: 16,
+      }}>
         <span style={{ fontSize: 13, color: UI_MUTED }}>Seleccionada: <strong style={{ color: UI_TEXT }}>{structs[selected]?.name}</strong></span>
         <button onClick={onApply}
           style={{ padding: "10px 28px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: UI_SHADOW_MD }}>
@@ -805,121 +823,196 @@ const StructureSelector = ({ selected, onSelect, onApply }) => {
 };
 
 const WireFrame = ({ id }) => {
-  const s = { background: "#f9f9f9", borderRadius: 7, padding: 7, margin: "0 7px 7px" };
-  const hdr = <div style={{ background: DARK, borderRadius: 4, height: 16, marginBottom: 4, display: "flex", alignItems: "center", padding: "0 5px", gap: 3 }}>
-    <div style={{ width: 7, height: 7, borderRadius: "50%", background: ACC }} />
-    <div style={{ flex: 1, height: 2, background: "rgba(255,255,255,.3)", borderRadius: 1 }} />
-  </div>;
-  const heroWf = <div style={{ background: ACC, borderRadius: 4, height: 38, marginBottom: 4, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2 }}>
-    <div style={{ background: "rgba(26,37,53,.5)", borderRadius: 1, height: 3, width: "68%" }} />
-    <div style={{ background: "rgba(26,37,53,.5)", borderRadius: 1, height: 3, width: "44%" }} />
-    <div style={{ background: DARK, borderRadius: 3, height: 7, width: 26, marginTop: 2 }} />
-  </div>;
-  const line = (w = "100%") => <div style={{ background: "#e5e7eb", borderRadius: 2, height: 4, marginBottom: 2, width: w }} />;
-  const circle = (size = 12, bg = ACC) => <div style={{ width: size, height: size, borderRadius: "50%", background: bg, flexShrink: 0 }} />;
-  const footer = <div style={{ background: DARK, borderRadius: 4, height: 18, marginTop: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
-    <div style={{ background: "rgba(255,255,255,.2)", borderRadius: 2, height: 2, width: 44 }} />
-  </div>;
+  const line = (w = "100%", h = 3, bg = "#e5e7eb") => <div style={{ background: bg, borderRadius: 2, height: h, marginBottom: 2, width: w }} />;
+  const btn = (w = "50%", bg = ACC) => <div style={{ background: bg, borderRadius: 3, height: 7, width: w, margin: "3px auto 0" }} />;
 
-  return (
-    <div style={s}>
-      {hdr}{heroWf}
-      {id === "clasica" && <>
-        <div style={{ display: "flex", gap: 4, marginBottom: 4, height: 24 }}>
-          <div style={{ background: "#e5e7eb", borderRadius: 4, flex: 1 }} />
-          <div style={{ flex: 1.2, display: "flex", flexDirection: "column", gap: 2, justifyContent: "center" }}>{line("65%")}{line("45%")}<div style={{ width: 24, height: 5, background: ACC, borderRadius: 2, opacity: .7 }} /></div>
+  const phoneContent = {
+    clasica: (
+      <>
+        {/* Hero */}
+        <div style={{ background: ACC, height: 36, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, padding: "0 6px" }}>
+          {line("70%", 3, "rgba(26,37,53,.5)")}{line("45%", 3, "rgba(26,37,53,.5)")}{btn("38%", DARK)}
         </div>
-        <div style={{ display: "flex", gap: 3, marginBottom: 4 }}>
-          {[1,2,3].map(k => <div key={k} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>{circle(12, DARK)}{line()}</div>)}
+        {/* Imagen + texto */}
+        <div style={{ padding: "4px 6px" }}>
+          <div style={{ background: "#e5e7eb", borderRadius: 3, height: 18, marginBottom: 4 }} />
+          {line("90%")}{line("75%")}{line("55%")}
+          {btn("60%")}
         </div>
-        <div style={{ display: "flex", gap: 3, height: 18, marginBottom: 3 }}><div style={{ background: DARK, borderRadius: 3, width: 38 }} /><div style={{ background: "#e5e7eb", borderRadius: 3, flex: 1 }} /></div>
-      </>}
-      {id === "beneficios" && <>
-        <div style={{ textAlign: "center", fontSize: 8, fontWeight: 700, color: DARK, margin: "3px 0" }}>Beneficios</div>
-        <div style={{ display: "flex", gap: 4, justifyContent: "center", marginBottom: 4 }}>{[1,2,3].map(k => <div key={k} style={{ width: 14, height: 14, borderRadius: "50%", background: ACC }} />)}</div>
-        <div style={{ background: "#e5e7eb", borderRadius: 4, height: 22, marginBottom: 3, display: "flex", alignItems: "center", padding: 3 }}>
-          <div style={{ flex: 1, height: 4, background: "#ccc", borderRadius: 2, margin: "0 3px" }} />
-          <div style={{ width: 22, height: 6, background: ACC, borderRadius: 2, opacity: .7 }} />
-        </div>
-        <div style={{ display: "flex", gap: 3 }}>{circle(15)}<div style={{ flex: 1 }}>{line()}{line("55%")}<div style={{ display: "flex", gap: 1, marginTop: 1 }}>{[1,2,3,4,5].map(k => <div key={k} style={{ width: 4, height: 4, background: ACC, borderRadius: 1 }} />)}</div></div></div>
-      </>}
-      {id === "storytelling" && <>
-        <div style={{ margin: "4px 0", display: "flex", flexDirection: "column", gap: 4 }}>
-          {[1,2,3].map(n => <div key={n} style={{ display: "flex", gap: 4, alignItems: "center" }}>
-            <div style={{ width: 14, height: 14, borderRadius: "50%", background: ACC, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 6, fontWeight: 700, color: DARK, flexShrink: 0 }}>{n}</div>
-            <div style={{ flex: 1, background: "#e5e7eb", borderRadius: 3, height: 16 }} />
+        {/* 3 iconos stacked */}
+        <div style={{ padding: "0 6px 4px", display: "flex", flexDirection: "column", gap: 3 }}>
+          {[1,2,3].map(k => <div key={k} style={{ display: "flex", gap: 4, alignItems: "center" }}>
+            <div style={{ width: 10, height: 10, borderRadius: "50%", background: DARK, flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>{line()}{line("70%", 2)}</div>
           </div>)}
         </div>
-        <div style={{ background: ACC, borderRadius: 4, padding: 4, marginBottom: 3 }}>{line()}{line("70%")}</div>
-        <div style={{ display: "flex", gap: 3 }}><div style={{ background: DARK, borderRadius: 3, width: 36, height: 18, flexShrink: 0 }} /><div style={{ background: "#e5e7eb", borderRadius: 3, flex: 1, height: 18 }} /></div>
-      </>}
-      {id === "urgencia" && <>
-        <div style={{ background: DARK, borderRadius: 4, padding: 4, marginBottom: 4 }}>
-          <div style={{ fontSize: 7, color: "rgba(255,255,255,.6)", textAlign: "center", marginBottom: 2 }}>Tiempo limitado</div>
-          <div style={{ display: "flex", gap: 2, justifyContent: "center", alignItems: "center" }}>
-            {["02","15","37"].map((v, i) => <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 2 }}>
-              <span style={{ background: "#fff", borderRadius: 2, width: 12, height: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 6, fontWeight: 700, color: DARK }}>{v}</span>
-              {i < 2 && <span style={{ color: "#fff", fontWeight: 700, fontSize: 8 }}>:</span>}
+        {/* Form */}
+        <div style={{ padding: "0 6px 2px", display: "flex", flexDirection: "column", gap: 2 }}>
+          {[1,2].map(k => <div key={k} style={{ background: "#f0f0f0", borderRadius: 3, height: 7 }} />)}
+          {btn("80%", DARK)}
+        </div>
+      </>
+    ),
+    beneficios: (
+      <>
+        <div style={{ background: ACC, height: 32, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, padding: "0 6px" }}>
+          {line("70%", 3, "rgba(26,37,53,.5)")}{line("45%", 3, "rgba(26,37,53,.5)")}{btn("38%", DARK)}
+        </div>
+        <div style={{ padding: "4px 6px 2px", textAlign: "center" }}>
+          {line("55%", 4, DARK)}<div style={{ marginTop: 2 }} />{line("80%")}{line("65%")}
+        </div>
+        {/* Beneficios apilados */}
+        <div style={{ padding: "2px 6px", display: "flex", flexDirection: "column", gap: 3 }}>
+          {[1,2,3].map(k => <div key={k} style={{ display: "flex", gap: 4, alignItems: "center", background: "#f3f4f6", borderRadius: 3, padding: "3px 4px" }}>
+            <div style={{ width: 10, height: 10, borderRadius: "50%", background: ACC, flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>{line("85%", 2)}{line("65%", 2)}</div>
+          </div>)}
+        </div>
+        {/* Form */}
+        <div style={{ padding: "3px 6px 2px" }}>
+          <div style={{ background: "#f0f0f0", borderRadius: 3, height: 7, marginBottom: 2 }} />
+          <div style={{ display: "flex", gap: 2, alignItems: "center" }}>
+            <div style={{ flex: 1, background: "#f0f0f0", borderRadius: 3, height: 7 }} />
+            <div style={{ background: ACC, borderRadius: 3, height: 7, width: 24 }} />
+          </div>
+        </div>
+      </>
+    ),
+    storytelling: (
+      <>
+        <div style={{ background: ACC, height: 30, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, padding: "0 6px" }}>
+          {line("70%", 3, "rgba(26,37,53,.5)")}{line("45%", 3, "rgba(26,37,53,.5)")}
+        </div>
+        {/* Pasos */}
+        <div style={{ padding: "4px 6px 2px", display: "flex", flexDirection: "column", gap: 3 }}>
+          {[1,2,3].map(n => <div key={n} style={{ display: "flex", gap: 4, alignItems: "center" }}>
+            <div style={{ width: 12, height: 12, borderRadius: "50%", background: ACC, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 5, fontWeight: 700, color: DARK, flexShrink: 0 }}>{n}</div>
+            <div style={{ flex: 1, background: "#e5e7eb", borderRadius: 3, height: 12 }} />
+          </div>)}
+        </div>
+        {/* CTA banner */}
+        <div style={{ background: ACC, borderRadius: 3, padding: 4, margin: "2px 6px" }}>
+          {line("85%")}{line("65%")}{btn("50%", DARK)}
+        </div>
+        {/* Form */}
+        <div style={{ padding: "2px 6px 2px", display: "flex", flexDirection: "column", gap: 2 }}>
+          {[1,2].map(k => <div key={k} style={{ background: "#f0f0f0", borderRadius: 3, height: 7 }} />)}
+          {btn("80%", DARK)}
+        </div>
+      </>
+    ),
+    urgencia: (
+      <>
+        <div style={{ background: ACC, height: 30, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, padding: "0 6px" }}>
+          {line("70%", 3, "rgba(26,37,53,.5)")}{line("45%", 3, "rgba(26,37,53,.5)")}{btn("38%", DARK)}
+        </div>
+        {/* Countdown */}
+        <div style={{ background: DARK, margin: "3px 6px", borderRadius: 4, padding: 4 }}>
+          <div style={{ fontSize: 5, color: "rgba(255,255,255,.6)", textAlign: "center", marginBottom: 2 }}>Tiempo limitado</div>
+          <div style={{ display: "flex", gap: 2, justifyContent: "center" }}>
+            {["02","15","37"].map((v, i) => <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+              <span style={{ background: "#fff", borderRadius: 2, width: 10, height: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 5, fontWeight: 700, color: DARK }}>{v}</span>
+              {i < 2 && <span style={{ color: "#fff", fontWeight: 700, fontSize: 7 }}>:</span>}
             </span>)}
           </div>
         </div>
-        <div style={{ display: "flex", gap: 3, justifyContent: "center", marginBottom: 3 }}>
-          {[1,2,3].map(k => <div key={k} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>{circle(12)}{line()}</div>)}
-        </div>
-        <div style={{ display: "flex", gap: 3 }}><div style={{ background: DARK, borderRadius: 3, width: 36, height: 18, flexShrink: 0 }} /><div style={{ background: "#e5e7eb", borderRadius: 3, flex: 1, height: 18 }} /></div>
-      </>}
-      {id === "profesional" && <>
-        <div style={{ background: "#f0f0f0", borderRadius: 3, padding: "3px 4px", marginBottom: 3 }}>
-          <div style={{ background: "#c8f135", borderRadius: 2, height: 5, width: "55%", marginBottom: 2 }} />
-          {line("90%")}{line("70%")}{line("50%")}
-          <div style={{ background: "#c8f135", borderRadius: 2, height: 6, width: 28, marginTop: 2 }} />
-        </div>
-        <div style={{ display: "flex", gap: 2, marginBottom: 3 }}>
-          {[1,2,3,4].map(k => <div key={k} style={{ flex: 1, background: "#f3f4f6", borderRadius: 3, padding: "2px 2px" }}>
-            <div style={{ background: "#c8f135", borderRadius: 1, height: 3, width: "60%", marginBottom: 1 }} />
-            {line()}{line("70%")}
+        {/* Beneficios col */}
+        <div style={{ padding: "2px 6px", display: "flex", flexDirection: "column", gap: 2 }}>
+          {[1,2,3].map(k => <div key={k} style={{ display: "flex", gap: 3, alignItems: "center" }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: ACC, flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>{line("90%", 2)}{line("70%", 2)}</div>
           </div>)}
         </div>
-        <div style={{ background: "#f8f9fa", borderRadius: 3, padding: 3, marginBottom: 3 }}>
-          <div style={{ display: "flex", gap: 2 }}>
-            {[1,2,3].map(k => <div key={k} style={{ flex: 1 }}>{line()}{line("80%")}{line("60%")}</div>)}
-          </div>
+        {/* Form */}
+        <div style={{ padding: "2px 6px 2px", display: "flex", flexDirection: "column", gap: 2 }}>
+          {[1,2].map(k => <div key={k} style={{ background: "#f0f0f0", borderRadius: 3, height: 7 }} />)}
+          {btn("80%", DARK)}
         </div>
-        <div style={{ background: DARK, borderRadius: 3, padding: 3 }}>
-          <div style={{ display: "flex", gap: 2 }}>
-            <div style={{ flex: 1 }}>{line()}{line("70%")}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ background: "rgba(255,255,255,.15)", borderRadius: 2, height: 4, marginBottom: 2 }} />
-              <div style={{ background: "rgba(255,255,255,.15)", borderRadius: 2, height: 4, marginBottom: 2 }} />
-              <div style={{ background: "#c8f135", borderRadius: 2, height: 6, width: "60%" }} />
-            </div>
-          </div>
+      </>
+    ),
+    profesional: (
+      <>
+        <div style={{ background: "#c8f135", height: 8, display: "flex", alignItems: "center", padding: "0 6px", gap: 2 }}>
+          <div style={{ width: 6, height: 6, borderRadius: 1, background: DARK }} />
+          <div style={{ flex: 1, height: 2, background: "rgba(26,37,53,.4)", borderRadius: 1 }} />
         </div>
-      </>}
-      {id === "unab" && <>
-        <div style={{ background: DARK, borderRadius: 4, height: 26, marginBottom: 3, display: "flex", alignItems: "center", padding: "0 5px", gap: 4 }}>
-          <div style={{ width: 10, height: 10, borderRadius: 2, background: "rgba(255,255,255,.3)" }} />
-          <div style={{ flex: 1 }}>{line("75%")}{line("55%")}</div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ background: "rgba(255,255,255,.25)", borderRadius: 1, height: 3, width: 18, marginBottom: 2 }} />
-            <div style={{ background: "#fff", borderRadius: 1, height: 6, width: 14 }} />
-          </div>
+        <div style={{ background: ACC, height: 28, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, padding: "0 6px" }}>
+          {line("70%", 3, "rgba(26,37,53,.5)")}{line("45%", 3, "rgba(26,37,53,.5)")}
+          <div style={{ background: DARK, borderRadius: 3, height: 6, width: 30, marginTop: 1 }} />
         </div>
-        <div style={{ display: "flex", gap: 3, marginBottom: 3, height: 36 }}>
-          <div style={{ flex: 1, background: "#fff", borderRadius: 3, padding: 3 }}>
-            <div style={{ background: DARK, borderRadius: 2, height: 5, width: "80%", margin: "0 auto 2px" }} />
-            {[1,2,3].map(k=><div key={k} style={{ display:"flex",gap:1,marginBottom:1 }}><div style={{ width:3,height:3,borderRadius:"50%",background:ACC,flexShrink:0,marginTop:1 }} /><div style={{ flex:1,height:3,background:"#e5e7eb",borderRadius:1 }} /></div>)}
-          </div>
-          <div style={{ flex: 1, padding: 3, display: "flex", flexDirection: "column", gap: 2 }}>
-            {[1,2,3,4].map(k=><div key={k} style={{ height:4,background:"rgba(255,255,255,.25)",borderRadius:2 }} />)}
-            <div style={{ height:5,background:ACC,borderRadius:2,width:"70%" }} />
-          </div>
+        {/* Catálogo 2 col */}
+        <div style={{ padding: "3px 6px 2px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          {[1,2,3,4].map(k => <div key={k} style={{ background: "#f3f4f6", borderRadius: 3, padding: "3px 3px" }}>
+            <div style={{ background: "#c8f135", borderRadius: 1, height: 3, width: "60%", marginBottom: 1 }} />
+            {line("90%", 2)}{line("70%", 2)}
+          </div>)}
         </div>
-        <div style={{ background: DARK, borderRadius: 3, height: 8, display: "flex", gap: 4, alignItems: "center", justifyContent: "center", padding: "0 4px" }}>
-          {[1,2,3,4,5].map(k=><div key={k} style={{ flex:1,height:4,background:"rgba(255,255,255,.25)",borderRadius:1 }} />)}
+        {/* Fases */}
+        <div style={{ padding: "2px 6px", display: "flex", flexDirection: "column", gap: 2 }}>
+          {[1,2,3].map(k => <div key={k} style={{ display: "flex", gap: 3, alignItems: "center" }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#c8f135", flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>{line("80%", 2)}{line("60%", 2)}</div>
+          </div>)}
         </div>
-      </>}
-      {footer}
+        {/* Footer form */}
+        <div style={{ background: DARK, padding: "3px 6px 2px", marginTop: 2 }}>
+          {[1,2].map(k => <div key={k} style={{ background: "rgba(255,255,255,.15)", borderRadius: 3, height: 6, marginBottom: 2 }} />)}
+          <div style={{ background: "#c8f135", borderRadius: 3, height: 7, width: "55%", margin: "0 auto" }} />
+        </div>
+      </>
+    ),
+    unab: (
+      <>
+        {/* Header con logo */}
+        <div style={{ background: DARK, height: 14, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 6px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <div style={{ width: 8, height: 8, borderRadius: 1, background: "rgba(255,255,255,.35)" }} />
+            {line("28px", 2, "rgba(255,255,255,.3)")}
+          </div>
+          <div style={{ background: ACC, borderRadius: 2, height: 6, width: 18 }} />
+        </div>
+        {/* Hero background con contenido */}
+        <div style={{ background: "rgba(26,37,53,.8)", padding: "5px 6px" }}>
+          {line("75%", 3, "rgba(255,255,255,.6)")}{line("55%", 2, "rgba(255,255,255,.4)")}
+        </div>
+        {/* Programas */}
+        <div style={{ background: "rgba(255,255,255,.95)", margin: "2px 6px", borderRadius: 3, padding: 4 }}>
+          {line("60%", 3, DARK)}<div style={{ marginTop: 2 }} />
+          {[1,2,3].map(k => <div key={k} style={{ display: "flex", gap: 2, marginBottom: 2, alignItems: "center" }}>
+            <div style={{ width: 4, height: 4, borderRadius: "50%", background: ACC, flexShrink: 0 }} />
+            {line("80%", 2)}
+          </div>)}
+        </div>
+        {/* Form */}
+        <div style={{ background: "rgba(255,255,255,.15)", margin: "2px 6px", borderRadius: 3, padding: 4, display: "flex", flexDirection: "column", gap: 2 }}>
+          {[1,2,3].map(k => <div key={k} style={{ background: "rgba(255,255,255,.4)", borderRadius: 2, height: 6 }} />)}
+          <div style={{ background: ACC, borderRadius: 3, height: 7, width: "70%", margin: "1px auto 0" }} />
+        </div>
+        {/* Acreditaciones */}
+        <div style={{ background: DARK, padding: "3px 6px", display: "flex", gap: 3, justifyContent: "center" }}>
+          {[1,2,3,4].map(k => <div key={k} style={{ background: "rgba(255,255,255,.2)", borderRadius: 2, width: 14, height: 8 }} />)}
+        </div>
+      </>
+    ),
+  };
+
+  return (
+    <div style={{ padding: "0 10px 10px", display: "flex", justifyContent: "center" }}>
+      {/* Phone shell */}
+      <div style={{ width: "100%", maxWidth: 90, border: `2px solid ${DARK}`, borderRadius: 12, overflow: "hidden", background: "#f9f9f9", boxShadow: `0 2px 8px rgba(0,0,0,.12)` }}>
+        {/* Status bar / notch */}
+        <div style={{ background: DARK, height: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: 16, height: 3, background: "rgba(255,255,255,.25)", borderRadius: 10 }} />
+        </div>
+        {/* Screen content */}
+        <div style={{ background: "#ffffff" }}>
+          {phoneContent[id]}
+        </div>
+        {/* Home indicator */}
+        <div style={{ background: "#f0f0f0", height: 7, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: 22, height: 2, background: "#ccc", borderRadius: 10 }} />
+        </div>
+      </div>
     </div>
   );
 };
