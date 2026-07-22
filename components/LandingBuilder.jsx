@@ -21,11 +21,21 @@ const UI_SHADOW_MD = "0 4px 14px -2px rgba(114,103,239,0.18)";
 const UI_RADIUS = 8;
 const UI_FONT = "'Inter','Segoe UI',system-ui,sans-serif";
 
+const CONTAINERS = [
+  { id: "full",           label: "Full Screen",    desc: "Sin límite de ancho",  maxW: null, barW: "100%" },
+  { id: "container",      label: "container",       desc: "≤ 1320px",             maxW: 1320, barW: "96%" },
+  { id: "container-xl",   label: "container-xl",    desc: "≤ 1140px",             maxW: 1140, barW: "83%" },
+  { id: "container-lg",   label: "container-lg",    desc: "≤ 960px",              maxW: 960,  barW: "70%" },
+  { id: "container-md",   label: "container-md",    desc: "≤ 720px",              maxW: 720,  barW: "52%" },
+  { id: "container-sm",   label: "container-sm",    desc: "≤ 540px",              maxW: 540,  barW: "39%" },
+];
+
 // ─── DEFAULT DATA ────────────────────────────────────────────────────────────
 const mkDefault = (struct = "clasica") => ({
   id: null,
   name: "Mi Nueva Landing",
   createdAt: null,
+  containerType: "full",
   struct,
   utm: { source: "", medium: "", campaign: "", content: "", term: "" },
   header: {
@@ -533,7 +543,9 @@ const buildPreviewHTML = (d, full = false) => {
         <button style="width:100%;padding:${full?"10px 0":"5px 0"};background:${form.btnColor||DARK};color:${form.btnTextColor||"#fff"};border:none;border-radius:${full?6:4}px;font-size:${full?14:8}px;font-weight:700;cursor:pointer">${form.btnText||"Enviar"}</button>
       </div>`;
     };
-    return `<div style="font-family:'Segoe UI',sans-serif;width:100%;position:relative;${bgImg?`background-image:url('${bgImg}');background-size:cover;background-position:center;`:`background:${d.header.bgColor};`}">
+    const unabCtCfg = CONTAINERS.find(c => c.id === (d.containerType || "full")) || CONTAINERS[0];
+    const unabCtStyle = unabCtCfg.maxW ? `max-width:${unabCtCfg.maxW}px;margin:0 auto;` : "width:100%";
+    return `<div style="font-family:'Segoe UI',sans-serif;${unabCtStyle};position:relative;${bgImg?`background-image:url('${bgImg}');background-size:cover;background-position:center;`:`background:${d.header.bgColor};`}">
       <div style="position:absolute;inset:0;background:rgba(0,0,0,${d.hero.overlay||0.5})"></div>
       <div style="position:relative;z-index:2">
         <div class="container-fluid" style="padding:${full?"28px 50px 22px":"14px 20px 10px"}">
@@ -579,7 +591,9 @@ const buildPreviewHTML = (d, full = false) => {
     </div>`;
   }
 
-  return `<div style="font-family:'Segoe UI',sans-serif;width:100%">${hdr}${hero}${mid}${ftr}</div>`;
+  const ctCfg = CONTAINERS.find(c => c.id === (d.containerType || "full")) || CONTAINERS[0];
+  const ctStyle = ctCfg.maxW ? `max-width:${ctCfg.maxW}px;margin:0 auto;` : "width:100%";
+  return `<div style="font-family:'Segoe UI',sans-serif;${ctStyle}">${hdr}${hero}${mid}${ftr}</div>`;
 };
 
 // ─── EXPORT HTML ──────────────────────────────────────────────────────────────
@@ -1076,6 +1090,23 @@ const EditorSidebar = ({ data, setData, onSave }) => {
       <div style={{ flex: 1, overflowY: "auto", padding: 10 }}>
 
         {tab === "header" && <>
+          <Panel title="📐 Ancho de la página">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              {CONTAINERS.map(c => {
+                const active = (data.containerType || "full") === c.id;
+                return (
+                  <button key={c.id} onClick={() => setData(d => ({ ...d, containerType: c.id }))}
+                    style={{ padding: "7px 8px", border: `2px solid ${active ? UI_PRIMARY : UI_BORDER}`, borderRadius: UI_RADIUS, background: active ? "#ede9ff" : UI_CARD, cursor: "pointer", textAlign: "left", transition: "all .15s" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: active ? UI_PRIMARY : UI_TEXT, marginBottom: 1 }}>{c.label}</div>
+                    <div style={{ fontSize: 9, color: UI_MUTED, marginBottom: 4 }}>{c.desc}</div>
+                    <div style={{ height: 3, background: UI_BORDER, borderRadius: 2, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: c.barW, background: active ? UI_PRIMARY : "#c8cdd4", borderRadius: 2, transition: "background .15s" }} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </Panel>
           <Panel title="🏷 Logo y Colores">
             <Field label="Texto del Logo" value={data.header.logoText} onChange={v => upd("header", "logoText", v)} />
             <ImgField label="Logo (URL o subir imagen)" value={data.header.logoUrl} onChange={v => upd("header", "logoUrl", v)} />
@@ -1601,11 +1632,14 @@ const LivePreview = ({ data }) => {
   const P = "24px";
   const hH = (data.form && data.form.showInHero) ? 280 : 220;
 
+  const lpCtCfg = CONTAINERS.find(c => c.id === (data.containerType || "full")) || CONTAINERS[0];
+  const lpCtStyle = lpCtCfg.maxW ? { maxWidth: lpCtCfg.maxW, margin: "0 auto" } : {};
+
   if (s === "unab") {
     const u = data.unab || {};
     const bgImg = slides[0] || "";
     return (
-      <div style={{ fontFamily: "'Segoe UI',sans-serif", width: "100%", position: "relative", backgroundImage: bgImg ? `url(${bgImg})` : "none", backgroundSize: "cover", backgroundPosition: "center", backgroundColor: bgImg ? undefined : data.header.bgColor }}>
+      <div style={{ fontFamily: "'Segoe UI',sans-serif", ...lpCtStyle, position: "relative", backgroundImage: bgImg ? `url(${bgImg})` : "none", backgroundSize: "cover", backgroundPosition: "center", backgroundColor: bgImg ? undefined : data.header.bgColor }}>
         <div style={{ position: "absolute", inset: 0, background: `rgba(0,0,0,${data.hero.overlay || 0.5})` }} />
         <div style={{ position: "relative", zIndex: 2 }}>
           {/* Header row */}
@@ -1665,7 +1699,7 @@ const LivePreview = ({ data }) => {
   }
 
   return (
-    <div style={{ fontFamily: "'Segoe UI',sans-serif", width: "100%" }}>
+    <div style={{ fontFamily: "'Segoe UI',sans-serif", ...lpCtStyle }}>
       {/* Header */}
       <header style={{ background: data.header.bgColor, padding: `0 ${P}`, height: 44, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 10 }}>
         <span style={{ color: data.header.textColor, fontWeight: 700, fontSize: 13 }}>
