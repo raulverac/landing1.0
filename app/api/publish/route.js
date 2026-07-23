@@ -21,10 +21,10 @@ export async function POST(request) {
     const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
     const filename = `${slug}-${date}-${landingId}.html`;
 
-    const dir = path.join(process.cwd(), "public", "landing");
+    const dir = path.join(process.cwd(), "data", "landings");
     await mkdir(dir, { recursive: true });
 
-    // Remove previous file if name or date changed
+    // Remove previous file if it changed
     if (prevFilename && prevFilename !== filename) {
       const prev = path.join(dir, prevFilename);
       if (existsSync(prev)) await unlink(prev).catch(() => {});
