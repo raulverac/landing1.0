@@ -249,99 +249,138 @@ const buildUTM = (utm) => {
 const buildPreviewHTML = (d, full = false) => {
   const s = d.struct || "clasica";
   const slides = (d.hero.slides || []).filter(Boolean);
-  const P = full ? "50px" : "24px";
-  const hH = (d.form && d.form.showInHero) ? (full ? 520 : 280) : (full ? 460 : 220);
 
-  const hdr = `<header style="background:${d.header.bgColor};padding:0 ${P};height:${full ? 58 : 44}px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100">
-    <span style="color:${d.header.textColor};font-weight:700;font-size:${full ? 19 : 13}px">${d.header.logoUrl ? `<img src="${d.header.logoUrl}" style="height:${full ? (d.header.logoSize||30) : Math.round((d.header.logoSize||30)*0.73)}px;object-fit:contain">` : d.header.logoText}</span>
-    <nav style="display:flex;gap:${full ? 20 : 12}px">${(d.header.menu || []).map(m => `<a href="${m.h}" style="color:${d.header.textColor};text-decoration:none;font-size:${full ? 13 : 10}px">${m.l}</a>`).join("")}</nav>
+  // ── Header ──────────────────────────────────────────────────────────────────
+  const hdr = `<header class="sticky-top" style="background:${d.header.bgColor};z-index:100">
+    <div class="container-fluid px-3 px-md-4">
+      <div class="d-flex align-items-center justify-content-between" style="min-height:58px">
+        <a href="#" style="color:${d.header.textColor};font-weight:700;font-size:18px;text-decoration:none">
+          ${d.header.logoUrl ? `<img src="${d.header.logoUrl}" style="height:${d.header.logoSize||30}px;object-fit:contain;max-width:180px">` : d.header.logoText}
+        </a>
+        <nav class="d-none d-md-flex align-items-center gap-3">
+          ${(d.header.menu || []).map(m => `<a href="${m.h}" style="color:${d.header.textColor};text-decoration:none;font-size:14px;opacity:.85">${m.l}</a>`).join("")}
+        </nav>
+      </div>
+    </div>
   </header>`;
 
-  const heroFormHTML = (d.form && d.form.showInHero) ? (() => {
-    const f = d.form || {};
-    const P2 = full ? "10px 12px" : "4px 6px";
-    const fields = (f.fields || []).map(field => `<div style="margin-bottom:${full ? 10 : 4}px"><label style="display:block;color:${f.textColor || "#fff"};font-size:${full ? 11 : 7}px;margin-bottom:${full ? 3 : 1}px;opacity:.85">${field.label}${field.required ? '<span style="color:#ef4444;margin-left:2px">*</span>' : ""}</label>${field.type === "textarea" ? `<textarea placeholder="${field.placeholder}" rows="${full ? 3 : 2}" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:${P2};color:${f.textColor || "#fff"};font-size:${full ? 12 : 8}px;resize:none;box-sizing:border-box"></textarea>` : `<input type="${field.type || "text"}" placeholder="${field.placeholder}" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:${P2};color:${f.textColor || "#fff"};font-size:${full ? 12 : 8}px;box-sizing:border-box">`}</div>`).join("");
-    return `${f.title ? `<div style="color:${f.textColor || "#fff"};font-weight:700;font-size:${full ? 20 : 11}px;margin-bottom:${full ? 4 : 2}px">${f.title}</div>` : ""}${f.subtitle ? `<div style="color:${f.textColor || "#ccc"};opacity:.75;font-size:${full ? 13 : 8}px;margin-bottom:${full ? 14 : 6}px">${f.subtitle}</div>` : ""}${fields}${f.privacyText ? `<div style="color:${f.textColor || "#ccc"};font-size:${full ? 10 : 7}px;opacity:.6;line-height:1.5;margin-bottom:${full ? 8 : 3}px">${f.privacyText}</div>` : ""}${f.showPrivacyCheck ? `<label style="display:flex;align-items:center;gap:5px;font-size:${full ? 10 : 7}px;color:${f.textColor || "#ccc"};opacity:.75;margin-bottom:${full ? 10 : 4}px;cursor:pointer"><input type="checkbox"> <span>Acepto recibir otras comunicaciones</span></label>` : ""}<button style="background:${f.btnColor || ACC};color:${f.btnTextColor || DARK};border:none;border-radius:5px;padding:${full ? "10px 22px" : "4px 10px"};font-weight:700;font-size:${full ? 13 : 8}px;cursor:pointer">${f.btnText || "Enviar"}</button>`;
-  })() : "";
+  // ── Hero form helper ────────────────────────────────────────────────────────
+  const mkFormFields = (f) => {
+    const fields = (f.fields || []).map(field => `
+      <div class="mb-2">
+        <label style="display:block;color:${f.textColor||"#fff"};font-size:12px;margin-bottom:3px;opacity:.85">${field.label}${field.required?'<span style="color:#ef4444;margin-left:2px">*</span>':""}</label>
+        ${field.type==="textarea"
+          ? `<textarea placeholder="${field.placeholder}" rows="3" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:8px 10px;color:${f.textColor||"#fff"};font-size:13px;resize:none;box-sizing:border-box"></textarea>`
+          : `<input type="${field.type||"text"}" placeholder="${field.placeholder}" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:8px 10px;color:${f.textColor||"#fff"};font-size:13px;box-sizing:border-box">`}
+      </div>`).join("");
+    return `
+      ${f.title?`<h4 style="color:${f.textColor||"#fff"};font-weight:700;font-size:18px;margin-bottom:4px">${f.title}</h4>`:""}
+      ${f.subtitle?`<p style="color:${f.textColor||"#ccc"};opacity:.75;font-size:13px;margin-bottom:12px">${f.subtitle}</p>`:""}
+      ${fields}
+      ${f.privacyText?`<p style="color:${f.textColor||"#ccc"};font-size:10px;opacity:.6;line-height:1.5;margin-bottom:8px">${f.privacyText}</p>`:""}
+      ${f.showPrivacyCheck?`<label style="display:flex;align-items:center;gap:6px;font-size:11px;color:${f.textColor||"#ccc"};opacity:.75;margin-bottom:10px;cursor:pointer"><input type="checkbox"> <span>Acepto recibir otras comunicaciones</span></label>`:""}
+      <button class="w-100 mt-1" style="background:${f.btnColor||ACC};color:${f.btnTextColor||DARK};border:none;border-radius:5px;padding:10px;font-weight:700;font-size:14px;cursor:pointer">${f.btnText||"Enviar"}</button>`;
+  };
 
-  const hero = `<section id="hero" style="position:relative;height:${hH}px;overflow:hidden">
-    ${slides.map((sl, i) => `<div class="hero-sl" style="position:absolute;inset:0;background:url('${sl}') center/cover;opacity:${i === 0 ? 1 : 0};transition:opacity 1s"></div>`).join("")}
+  // ── Hero ────────────────────────────────────────────────────────────────────
+  const showHeroForm = d.form && d.form.showInHero;
+  const hero = `<section id="hero" style="position:relative;min-height:${showHeroForm?500:420}px;overflow:hidden" class="d-flex align-items-center">
+    ${slides.map((sl, i) => `<div class="hero-sl" style="position:absolute;inset:0;background:url('${sl}') center/cover;opacity:${i===0?1:0};transition:opacity 1s"></div>`).join("")}
     <div style="position:absolute;inset:0;background:rgba(0,0,0,${d.hero.overlay})"></div>
-    <div style="position:absolute;bottom:${full ? 14 : 8}px;left:50%;transform:translateX(-50%);display:flex;gap:5px">
-      ${slides.map((_, i) => `<div class="hero-dt" style="width:${full ? 7 : 5}px;height:${full ? 7 : 5}px;border-radius:50%;background:#fff;opacity:${i === 0 ? 1 : 0.4};transition:opacity .3s;cursor:pointer"></div>`).join("")}
+    <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:3">
+      ${slides.map((_,i)=>`<div class="hero-dt" style="width:8px;height:8px;border-radius:50%;background:#fff;opacity:${i===0?1:0.4};cursor:pointer"></div>`).join("")}
     </div>
-    ${(d.form && d.form.showInHero)
-      ? `<div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:0 ${full ? 50 : 16}px;gap:${full ? 24 : 12}px">
-          <div style="flex:1;text-align:left">
-            <h1 style="color:#fff;font-size:${full ? 42 : 19}px;font-weight:700;margin-bottom:${full ? 14 : 7}px;line-height:1.2">${d.hero.title}</h1>
-            <p style="color:rgba(255,255,255,.85);font-size:${full ? 15 : 10}px;max-width:420px;margin-bottom:${full ? 26 : 12}px">${d.hero.desc}</p>
-            <a href="${d.hero.btnHref}" style="background:${d.hero.btnColor};color:${DARK};padding:${full ? "12px 34px" : "7px 16px"};border-radius:5px;text-decoration:none;font-weight:700;font-size:${full ? 14 : 10}px">${d.hero.btnText}</a>
-          </div>
-          <div style="background:${(d.form && d.form.bgColor) || DARK};border-radius:${full ? 10 : 7}px;padding:${full ? "22px 24px" : "10px 12px"};width:${full ? 340 : 190}px;flex-shrink:0;overflow-y:auto">
-            ${heroFormHTML}
-          </div>
-        </div>`
-      : `<div style="position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 ${full ? 70 : 28}px">
-          <h1 style="color:#fff;font-size:${full ? 42 : 20}px;font-weight:700;margin-bottom:${full ? 14 : 8}px;line-height:1.2">${d.hero.title}</h1>
-          <p style="color:rgba(255,255,255,.85);font-size:${full ? 15 : 11}px;max-width:480px;margin-bottom:${full ? 26 : 14}px">${d.hero.desc}</p>
-          <a href="${d.hero.btnHref}" style="background:${d.hero.btnColor};color:${DARK};padding:${full ? "12px 34px" : "7px 18px"};border-radius:5px;text-decoration:none;font-weight:700;font-size:${full ? 14 : 10}px">${d.hero.btnText}</a>
-        </div>`
-    }
+    <div class="container-fluid position-relative py-5" style="z-index:2">
+      ${showHeroForm
+        ? `<div class="row g-4 align-items-center">
+            <div class="col-12 col-lg-6">
+              <h1 style="color:#fff;font-size:clamp(24px,4vw,44px);font-weight:700;line-height:1.2;margin-bottom:14px">${d.hero.title}</h1>
+              <p style="color:rgba(255,255,255,.85);font-size:clamp(14px,2vw,16px);margin-bottom:24px">${d.hero.desc}</p>
+              <a href="${d.hero.btnHref}" style="display:inline-block;background:${d.hero.btnColor};color:${DARK};padding:12px 32px;border-radius:5px;text-decoration:none;font-weight:700;font-size:15px">${d.hero.btnText}</a>
+            </div>
+            <div class="col-12 col-lg-5 offset-lg-1">
+              <div style="background:${d.form.bgColor||DARK};border-radius:10px;padding:22px 24px">${mkFormFields(d.form)}</div>
+            </div>
+          </div>`
+        : `<div class="row justify-content-center">
+            <div class="col-12 col-md-8 text-center">
+              <h1 style="color:#fff;font-size:clamp(26px,5vw,48px);font-weight:700;line-height:1.2;margin-bottom:16px">${d.hero.title}</h1>
+              <p style="color:rgba(255,255,255,.85);font-size:clamp(14px,2vw,17px);margin-bottom:28px">${d.hero.desc}</p>
+              <a href="${d.hero.btnHref}" style="display:inline-block;background:${d.hero.btnColor};color:${DARK};padding:13px 36px;border-radius:5px;text-decoration:none;font-weight:700;font-size:15px">${d.hero.btnText}</a>
+            </div>
+          </div>`
+      }
+    </div>
   </section>`;
 
+  // ── Sections mid ────────────────────────────────────────────────────────────
   let mid = "";
 
   if (s === "clasica" || s === "storytelling") {
-    mid += `<section id="services" style="background:${d.services.bgColor};padding:${full ? 54 : 24}px ${P}">
-      <div style="text-align:center;margin-bottom:${full ? 36 : 16}px">
-        <h2 style="color:${d.services.titleColor};font-size:${full ? 30 : 16}px;font-weight:700;margin-bottom:6px">${d.services.title}</h2>
-        <p style="color:${d.services.titleColor};opacity:.6;font-size:${full ? 15 : 10}px">${d.services.subtitle}</p>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(${Math.min(d.services.cards.length, 4)},1fr);gap:${full ? 16 : 8}px">
-        ${d.services.cards.map(c => `<div style="background:${d.services.cardBg};border-radius:9px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06)">
-          ${c.imgUrl ? `<img src="${c.imgUrl}" style="width:100%;height:${full?150:90}px;object-fit:cover;display:block">` : ""}
-          <div style="padding:${full ? 20 : 10}px;text-align:center">
-            ${!c.imgUrl ? `<div style="font-size:${full ? 26 : 18}px;margin-bottom:8px">${c.icon}</div>` : ""}
-            <div style="color:${d.services.titleColor};font-weight:600;font-size:${full ? (c.titleSize||14) : Math.round((c.titleSize||14)*0.75)}px;margin-bottom:4px">${c.title}</div>
-            <div style="color:${d.services.titleColor};opacity:.6;font-size:${full ? (c.descSize||12) : Math.round((c.descSize||12)*0.78)}px;line-height:1.5">${c.desc}</div>
-          </div>
-        </div>`).join("")}
+    const nCols = Math.min(d.services.cards.length, 4);
+    const colCls = nCols === 1 ? "col-12" : nCols === 2 ? "col-12 col-sm-6" : nCols === 3 ? "col-12 col-sm-6 col-md-4" : "col-12 col-sm-6 col-xl-3";
+    mid += `<section id="services" style="background:${d.services.bgColor};padding:56px 0">
+      <div class="container-fluid px-4">
+        <div class="text-center mb-4">
+          <h2 style="color:${d.services.titleColor};font-size:clamp(22px,3vw,32px);font-weight:700;margin-bottom:8px">${d.services.title}</h2>
+          <p style="color:${d.services.titleColor};opacity:.6;font-size:15px">${d.services.subtitle}</p>
+        </div>
+        <div class="row g-3">
+          ${d.services.cards.map(c => `<div class="${colCls}">
+            <div style="background:${d.services.cardBg};border-radius:9px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);height:100%">
+              ${c.imgUrl ? `<img src="${c.imgUrl}" style="width:100%;height:160px;object-fit:cover;display:block">` : ""}
+              <div style="padding:20px;text-align:center">
+                ${!c.imgUrl ? `<div style="font-size:28px;margin-bottom:10px">${c.icon}</div>` : ""}
+                <div style="color:${d.services.titleColor};font-weight:600;font-size:${c.titleSize||14}px;margin-bottom:6px">${c.title}</div>
+                <div style="color:${d.services.titleColor};opacity:.6;font-size:${c.descSize||12}px;line-height:1.6">${c.desc}</div>
+              </div>
+            </div>
+          </div>`).join("")}
+        </div>
       </div>
     </section>`;
   }
 
   if (s === "beneficios") {
-    mid += `<section id="services" style="background:${d.benefits.bgColor};padding:${full ? 54 : 24}px ${P}">
-      <div style="text-align:center;margin-bottom:${full ? 36 : 16}px">
-        <h2 style="color:${d.benefits.titleColor};font-size:${full ? 30 : 16}px;font-weight:700;margin-bottom:6px">${d.benefits.title}</h2>
-        <p style="color:${d.benefits.titleColor};opacity:.6;font-size:${full ? 15 : 10}px">${d.benefits.subtitle}</p>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(${Math.min(d.benefits.items.length, 3)},1fr);gap:${full ? 20 : 10}px">
-        ${d.benefits.items.map(b => `<div style="text-align:center;padding:${full ? 22 : 12}px">
-          <div style="width:${full ? 60 : 40}px;height:${full ? 60 : 40}px;border-radius:50%;background:${d.benefits.accent};display:flex;align-items:center;justify-content:center;font-size:${full ? 26 : 18}px;margin:0 auto ${full ? 14 : 8}px">${b.icon}</div>
-          <div style="color:${d.benefits.titleColor};font-weight:700;font-size:${full ? 15 : 11}px;margin-bottom:4px">${b.title}</div>
-          <div style="color:${d.benefits.titleColor};opacity:.6;font-size:${full ? 12 : 9}px;line-height:1.6">${b.desc}</div>
-        </div>`).join("")}
+    const nB = Math.min(d.benefits.items.length, 3);
+    const colB = nB === 1 ? "col-12" : nB === 2 ? "col-12 col-md-6" : "col-12 col-sm-6 col-md-4";
+    mid += `<section id="services" style="background:${d.benefits.bgColor};padding:56px 0">
+      <div class="container-fluid px-4">
+        <div class="text-center mb-4">
+          <h2 style="color:${d.benefits.titleColor};font-size:clamp(22px,3vw,32px);font-weight:700;margin-bottom:8px">${d.benefits.title}</h2>
+          <p style="color:${d.benefits.titleColor};opacity:.6;font-size:15px">${d.benefits.subtitle}</p>
+        </div>
+        <div class="row g-4">
+          ${d.benefits.items.map(b => `<div class="${colB}">
+            <div class="text-center p-3">
+              <div style="width:64px;height:64px;border-radius:50%;background:${d.benefits.accent};display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px">${b.icon}</div>
+              <div style="color:${d.benefits.titleColor};font-weight:700;font-size:16px;margin-bottom:6px">${b.title}</div>
+              <div style="color:${d.benefits.titleColor};opacity:.6;font-size:13px;line-height:1.7">${b.desc}</div>
+            </div>
+          </div>`).join("")}
+        </div>
       </div>
     </section>`;
   }
 
   if (s === "urgencia") {
     const uB = d.urgency.bgColor || DARK, uT = d.urgency.textColor || "#fff";
-    mid += `<section id="services" style="background:${uB};padding:${full ? 46 : 22}px ${P}">
-      <div style="text-align:center;margin-bottom:${full ? 24 : 12}px">
-        <div style="color:${uT};font-size:${full ? 11 : 9}px;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;opacity:.6">Oferta especial</div>
-        <h2 style="color:${uT};font-size:${full ? 28 : 15}px;font-weight:700;margin-bottom:${full ? 18 : 10}px">${d.urgency.headline}</h2>
-        <div style="font-size:${full ? 46 : 26}px;font-weight:700;color:${d.hero.btnColor};font-family:monospace;letter-spacing:4px" id="cdt">00:00:00</div>
-        <div style="display:flex;justify-content:center;gap:${full ? 28 : 16}px;margin-top:4px">
-          ${["Horas", "Minutos", "Segundos"].map(l => `<span style="color:${uT};font-size:${full ? 10 : 8}px;opacity:.55">${l}</span>`).join("")}
+    mid += `<section id="services" style="background:${uB};padding:52px 0">
+      <div class="container-fluid px-4">
+        <div class="text-center mb-4">
+          <div style="color:${uT};font-size:11px;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;opacity:.6">Oferta especial</div>
+          <h2 style="color:${uT};font-size:clamp(20px,3vw,30px);font-weight:700;margin-bottom:18px">${d.urgency.headline}</h2>
+          <div style="font-size:clamp(36px,6vw,52px);font-weight:700;color:${d.hero.btnColor};font-family:monospace;letter-spacing:4px" id="cdt">00:00:00</div>
+          <div class="d-flex justify-content-center gap-4 mt-1">
+            ${["Horas","Minutos","Segundos"].map(l=>`<span style="color:${uT};font-size:11px;opacity:.55">${l}</span>`).join("")}
+          </div>
         </div>
-      </div>
-      <div style="display:flex;justify-content:center;gap:${full ? 24 : 14}px;flex-wrap:wrap;margin-top:${full ? 20 : 10}px">
-        ${d.urgency.badges.map(b => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-          <div style="width:${full ? 44 : 30}px;height:${full ? 44 : 30}px;border-radius:50%;background:${d.hero.btnColor};display:flex;align-items:center;justify-content:center;font-size:${full ? 20 : 14}px">${b.icon}</div>
-          <span style="color:${uT};font-size:${full ? 11 : 8}px;opacity:.8">${b.text}</span>
-        </div>`).join("")}
+        <div class="d-flex justify-content-center flex-wrap gap-4 mt-4">
+          ${d.urgency.badges.map(b=>`<div class="d-flex flex-column align-items-center gap-2">
+            <div style="width:48px;height:48px;border-radius:50%;background:${d.hero.btnColor};display:flex;align-items:center;justify-content:center;font-size:22px">${b.icon}</div>
+            <span style="color:${uT};font-size:12px;opacity:.8">${b.text}</span>
+          </div>`).join("")}
+        </div>
       </div>
     </section>`;
   }
@@ -350,181 +389,205 @@ const buildPreviewHTML = (d, full = false) => {
     const p = d.profesional || {};
     const accentC = p.heroBtnColor || "#c8f135";
     mid = `
-      <section style="background:${p.heroBgColor||DARK};padding:${full?60:30}px ${P}">
-        ${p.badge?`<div style="display:inline-block;background:${accentC};color:${DARK};font-size:${full?11:8}px;font-weight:700;padding:${full?"3px 10px":"2px 7px"};border-radius:3px;margin-bottom:${full?16:10}px;text-transform:uppercase;letter-spacing:1px">${p.badge}</div>`:""}
-        <h1 style="color:#fff;font-size:${full?40:18}px;font-weight:700;line-height:1.25;margin-bottom:${full?16:10}px;max-width:${full?620:320}px">
-          ${p.heroTitle} <span style="color:${accentC}">${p.heroTitleAccent}</span>
-        </h1>
-        <p style="color:rgba(255,255,255,.75);font-size:${full?15:10}px;line-height:1.7;margin-bottom:${full?28:16}px;max-width:${full?520:300}px">${p.heroDesc}</p>
-        <a href="#footer" style="display:inline-block;background:${accentC};color:${p.heroBtnTextColor||DARK};padding:${full?"13px 32px":"7px 16px"};border-radius:5px;text-decoration:none;font-weight:700;font-size:${full?15:10}px">${p.heroBtnText}</a>
-      </section>
-      <section style="background:${p.ecosystemBgColor||"#fff"};padding:${full?60:26}px ${P}">
-        <div style="text-align:center;margin-bottom:${full?40:18}px">
-          <div style="font-size:${full?11:8}px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:${full?6:3}px">${p.ecosystemTitle}</div>
-          <h2 style="font-size:${full?34:16}px;font-weight:900;color:${DARK};margin-bottom:${full?10:5}px">${p.ecosystemSubtitle}</h2>
-          <div style="width:${full?36:20}px;height:3px;background:${p.ecosystemAccent||accentC};margin:0 auto ${full?10:5}px"></div>
-          <p style="font-size:${full?15:9}px;color:#6b7280;max-width:500px;margin:0 auto">${p.ecosystemDesc}</p>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:${full?16:7}px">
-          ${(p.ecosystemCards||[]).map(c=>`<div style="border:1px solid #e5e7eb;border-radius:8px;padding:${full?18:8}px">
-            <div style="font-size:${full?10:7}px;font-weight:700;color:${p.ecosystemAccent||accentC};text-transform:uppercase;margin-bottom:${full?6:3}px;letter-spacing:.5px">${c.tag}</div>
-            <div style="font-size:${full?13:9}px;font-weight:700;color:${DARK};margin-bottom:${full?6:3}px">${c.title}</div>
-            <div style="font-size:${full?12:8}px;color:#6b7280;line-height:1.5">${c.desc}</div>
-          </div>`).join("")}
+      <section style="background:${p.heroBgColor||DARK};padding:72px 0">
+        <div class="container-fluid px-4">
+          <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+              ${p.badge?`<div style="display:inline-block;background:${accentC};color:${DARK};font-size:11px;font-weight:700;padding:3px 12px;border-radius:3px;margin-bottom:18px;text-transform:uppercase;letter-spacing:1px">${p.badge}</div>`:""}
+              <h1 style="color:#fff;font-size:clamp(26px,4vw,44px);font-weight:700;line-height:1.25;margin-bottom:18px">
+                ${p.heroTitle} <span style="color:${accentC}">${p.heroTitleAccent}</span>
+              </h1>
+              <p style="color:rgba(255,255,255,.75);font-size:16px;line-height:1.7;margin-bottom:28px">${p.heroDesc}</p>
+              <a href="#footer" style="display:inline-block;background:${accentC};color:${p.heroBtnTextColor||DARK};padding:13px 34px;border-radius:5px;text-decoration:none;font-weight:700;font-size:15px">${p.heroBtnText}</a>
+            </div>
+          </div>
         </div>
       </section>
-      <section style="background:${p.catalogBgColor||"#f8f9fa"};padding:${full?60:26}px ${P}">
-        <h2 style="font-size:${full?28:14}px;font-weight:700;color:${DARK};margin-bottom:${full?6:4}px">${p.catalogTitle}</h2>
-        <p style="font-size:${full?15:9}px;color:#6b7280;margin-bottom:${full?24:12}px">${p.catalogSubtitle}</p>
-        <div style="background:#fff;border-radius:10px;padding:${full?24:12}px;border:1px solid #e5e7eb">
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:${full?24:12}px">
-            ${(p.catalogCols||[]).map(col=>`<div>
-              <div style="font-size:${full?22:14}px;margin-bottom:${full?8:4}px">${col.icon}</div>
-              <div style="font-size:${full?15:10}px;font-weight:700;color:${DARK};margin-bottom:${full?10:5}px">${col.title}</div>
-              ${(col.items||[]).map(it=>`<div style="display:flex;gap:${full?8:4}px;margin-bottom:${full?6:3}px;align-items:flex-start">
-                <div style="width:${full?7:5}px;height:${full?7:5}px;border-radius:50%;background:${accentC};flex-shrink:0;margin-top:${full?4:2}px"></div>
-                <span style="font-size:${full?12:8}px;color:#374151;line-height:1.4">${it}</span>
-              </div>`).join("")}
+      <section style="background:${p.ecosystemBgColor||"#fff"};padding:64px 0">
+        <div class="container-fluid px-4">
+          <div class="text-center mb-5">
+            <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">${p.ecosystemTitle}</div>
+            <h2 style="font-size:clamp(24px,3vw,36px);font-weight:900;color:${DARK};margin-bottom:10px">${p.ecosystemSubtitle}</h2>
+            <div style="width:36px;height:3px;background:${p.ecosystemAccent||accentC};margin:0 auto 12px"></div>
+            <p style="font-size:15px;color:#6b7280;max-width:500px;margin:0 auto">${p.ecosystemDesc}</p>
+          </div>
+          <div class="row g-3">
+            ${(p.ecosystemCards||[]).map(c=>`<div class="col-12 col-sm-6 col-lg-3">
+              <div style="border:1px solid #e5e7eb;border-radius:8px;padding:18px;height:100%">
+                <div style="font-size:10px;font-weight:700;color:${p.ecosystemAccent||accentC};text-transform:uppercase;margin-bottom:6px;letter-spacing:.5px">${c.tag}</div>
+                <div style="font-size:14px;font-weight:700;color:${DARK};margin-bottom:6px">${c.title}</div>
+                <div style="font-size:13px;color:#6b7280;line-height:1.6">${c.desc}</div>
+              </div>
             </div>`).join("")}
           </div>
         </div>
       </section>
-      <section style="background:${p.phasesBgColor||"#fff"};padding:${full?60:26}px ${P}">
-        <div style="text-align:center;margin-bottom:${full?40:18}px">
-          <h2 style="font-size:${full?28:14}px;font-weight:700;color:${DARK};margin-bottom:${full?8:4}px">${p.phasesTitle}</h2>
-          <div style="width:${full?36:20}px;height:3px;background:${accentC};margin:0 auto ${full?8:4}px"></div>
-          <p style="font-size:${full?15:9}px;color:#6b7280">${p.phasesSubtitle}</p>
+      <section style="background:${p.catalogBgColor||"#f8f9fa"};padding:64px 0">
+        <div class="container-fluid px-4">
+          <h2 style="font-size:clamp(22px,3vw,30px);font-weight:700;color:${DARK};margin-bottom:6px">${p.catalogTitle}</h2>
+          <p style="font-size:15px;color:#6b7280;margin-bottom:24px">${p.catalogSubtitle}</p>
+          <div style="background:#fff;border-radius:10px;padding:28px;border:1px solid #e5e7eb">
+            <div class="row g-4">
+              ${(p.catalogCols||[]).map(col=>`<div class="col-12 col-md-4">
+                <div style="font-size:24px;margin-bottom:8px">${col.icon}</div>
+                <div style="font-size:16px;font-weight:700;color:${DARK};margin-bottom:10px">${col.title}</div>
+                ${(col.items||[]).map(it=>`<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start">
+                  <div style="width:7px;height:7px;border-radius:50%;background:${accentC};flex-shrink:0;margin-top:5px"></div>
+                  <span style="font-size:13px;color:#374151;line-height:1.5">${it}</span>
+                </div>`).join("")}
+              </div>`).join("")}
+            </div>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:${full?20:10}px">
-          ${(p.phases||[]).map(ph=>`<div style="text-align:center;padding:${full?20:10}px">
-            <div style="width:${full?52:32}px;height:${full?52:32}px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:${full?22:14}px;margin:0 auto ${full?12:6}px">${ph.icon}</div>
-            <div style="display:inline-block;background:${accentC};color:${DARK};font-size:${full?10:7}px;font-weight:700;padding:${full?"2px 10px":"1px 6px"};border-radius:10px;margin-bottom:${full?8:4}px">Fase ${ph.num}</div>
-            <div style="font-size:${full?14:9}px;font-weight:700;color:${DARK};margin-bottom:${full?6:3}px">${ph.title}</div>
-            <div style="font-size:${full?12:8}px;color:#6b7280;line-height:1.5">${ph.desc}</div>
-          </div>`).join("")}
+      </section>
+      <section style="background:${p.phasesBgColor||"#fff"};padding:64px 0">
+        <div class="container-fluid px-4">
+          <div class="text-center mb-5">
+            <h2 style="font-size:clamp(22px,3vw,30px);font-weight:700;color:${DARK};margin-bottom:8px">${p.phasesTitle}</h2>
+            <div style="width:36px;height:3px;background:${accentC};margin:0 auto 10px"></div>
+            <p style="font-size:15px;color:#6b7280">${p.phasesSubtitle}</p>
+          </div>
+          <div class="row g-4">
+            ${(p.phases||[]).map(ph=>`<div class="col-12 col-sm-6 col-md-4">
+              <div class="text-center p-3">
+                <div style="width:56px;height:56px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px">${ph.icon}</div>
+                <div style="display:inline-block;background:${accentC};color:${DARK};font-size:10px;font-weight:700;padding:2px 12px;border-radius:10px;margin-bottom:8px">Fase ${ph.num}</div>
+                <div style="font-size:14px;font-weight:700;color:${DARK};margin-bottom:6px">${ph.title}</div>
+                <div style="font-size:13px;color:#6b7280;line-height:1.6">${ph.desc}</div>
+              </div>
+            </div>`).join("")}
+          </div>
         </div>
       </section>`;
   }
 
   if (s === "storytelling") {
-    mid += `<section id="about" style="background:${d.story.bgColor};padding:${full ? 54 : 26}px ${P}">
-      <h2 style="color:${d.story.titleColor};font-size:${full ? 28 : 15}px;font-weight:700;text-align:center;margin-bottom:${full ? 36 : 18}px">${d.story.title}</h2>
-      <div style="max-width:${full ? 600 : 360}px;margin:0 auto;position:relative">
-        <div style="position:absolute;left:${full ? 18 : 11}px;top:0;bottom:0;width:2px;background:${d.hero.btnColor}"></div>
-        ${d.story.steps.map(st => `<div style="display:flex;gap:${full ? 18 : 10}px;margin-bottom:${full ? 24 : 14}px;align-items:flex-start">
-          <div style="width:${full ? 36 : 24}px;height:${full ? 36 : 24}px;border-radius:50%;background:${d.hero.btnColor};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:${full ? 14 : 10}px;color:${DARK};flex-shrink:0;z-index:1">${st.num}</div>
-          <div style="flex:1;background:#f9f9f9;border-radius:7px;padding:${full ? 14 : 8}px">
-            <div style="font-weight:700;color:${d.story.titleColor};font-size:${full ? 14 : 11}px;margin-bottom:3px">${st.title}</div>
-            <div style="color:${d.story.titleColor};opacity:.65;font-size:${full ? 12 : 9}px;line-height:1.6">${st.desc}</div>
+    mid += `<section id="about" style="background:${d.story.bgColor};padding:56px 0">
+      <div class="container-fluid px-4">
+        <h2 style="color:${d.story.titleColor};font-size:clamp(22px,3vw,30px);font-weight:700;text-align:center;margin-bottom:36px">${d.story.title}</h2>
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-8 col-lg-6 position-relative">
+            <div style="position:absolute;left:18px;top:0;bottom:0;width:2px;background:${d.hero.btnColor}"></div>
+            ${d.story.steps.map(st=>`<div style="display:flex;gap:16px;margin-bottom:24px;align-items:flex-start">
+              <div style="width:36px;height:36px;border-radius:50%;background:${d.hero.btnColor};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:${DARK};flex-shrink:0;z-index:1">${st.num}</div>
+              <div style="flex:1;background:#f9f9f9;border-radius:8px;padding:14px">
+                <div style="font-weight:700;color:${d.story.titleColor};font-size:14px;margin-bottom:4px">${st.title}</div>
+                <div style="color:${d.story.titleColor};opacity:.65;font-size:13px;line-height:1.6">${st.desc}</div>
+              </div>
+            </div>`).join("")}
+            <div style="background:${d.hero.btnColor};border-radius:9px;padding:24px;margin-top:8px">
+              <div style="font-size:36px;color:${DARK};line-height:.8;margin-bottom:8px">"</div>
+              <p style="color:${DARK};font-size:15px;font-style:italic;line-height:1.65;margin-bottom:8px">${d.story.quote}</p>
+              <div style="color:${DARK};font-size:12px;font-weight:600;opacity:.75">${d.story.quoteAuthor}</div>
+            </div>
           </div>
-        </div>`).join("")}
-      </div>
-      <div style="background:${d.hero.btnColor};border-radius:9px;padding:${full ? 24 : 14}px;margin-top:${full ? 28 : 14}px;max-width:${full ? 560 : 340}px;margin-left:auto;margin-right:auto">
-        <div style="font-size:${full ? 32 : 20}px;color:${DARK};line-height:.8;margin-bottom:7px">"</div>
-        <p style="color:${DARK};font-size:${full ? 15 : 11}px;font-style:italic;line-height:1.65;margin-bottom:7px">${d.story.quote}</p>
-        <div style="color:${DARK};font-size:${full ? 12 : 9}px;font-weight:600;opacity:.75">${d.story.quoteAuthor}</div>
-      </div>
-    </section>`;
-  } else if (s === "urgencia") {
-    mid += `<section id="about" style="background:#fff;padding:${full ? 44 : 22}px ${P}">
-      <div style="max-width:${full ? 540 : 340}px;margin:0 auto">
-        <h3 style="font-size:${full ? 20 : 13}px;font-weight:700;color:${DARK};margin-bottom:${full ? 18 : 10}px">${d.urgency.listTitle}</h3>
-        ${d.urgency.items.map(it => `<div style="display:flex;gap:${full ? 10 : 6}px;align-items:center;margin-bottom:${full ? 10 : 6}px">
-          <div style="width:${full ? 20 : 14}px;height:${full ? 20 : 14}px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:${full ? 11 : 8}px;color:#fff;font-weight:700">✓</div>
-          <span style="color:#374151;font-size:${full ? 13 : 10}px">${it}</span>
-        </div>`).join("")}
-        <div style="margin-top:${full ? 22 : 12}px;text-align:center">
-          <a href="${d.hero.btnHref}" style="display:inline-block;background:${d.hero.btnColor};color:${DARK};padding:${full ? "13px 36px" : "8px 20px"};border-radius:5px;text-decoration:none;font-weight:700;font-size:${full ? 15 : 11}px">${d.hero.btnText}</a>
         </div>
       </div>
     </section>`;
-  } else {
-    mid += `<section id="about" style="background:${d.about.bgColor};padding:${full ? 54 : 26}px ${P}">
-      <div style="display:flex;gap:${full ? 44 : 18}px;align-items:center;flex-direction:${d.about.imgLeft ? "row" : "row-reverse"}">
-        <div style="flex:1">${d.about.mediaType === "video" && d.about.videoUrl
-          ? `<iframe src="${d.about.videoUrl}" style="width:100%;height:${full ? 240 : 130}px;border-radius:9px;border:none" allowfullscreen></iframe>`
-          : `<img src="${d.about.mediaUrl}" style="width:100%;border-radius:9px;object-fit:cover;max-height:${full ? 280 : 150}px;display:block" />`
-        }</div>
-        <div style="flex:1">
-          <h2 style="color:${d.about.textColor};font-size:${full ? 28 : 15}px;font-weight:700;margin-bottom:${full ? 14 : 8}px">${d.about.title}</h2>
-          ${d.about.desc.split("\n\n").map(p => `<p style="color:${d.about.textColor};opacity:.75;font-size:${full ? 15 : 10}px;line-height:1.75;margin-bottom:8px">${p}</p>`).join("")}
+  } else if (s === "urgencia") {
+    mid += `<section id="about" style="background:#fff;padding:52px 0">
+      <div class="container-fluid px-4">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-7 col-lg-5">
+            <h3 style="font-size:clamp(18px,2.5vw,22px);font-weight:700;color:${DARK};margin-bottom:20px">${d.urgency.listTitle}</h3>
+            ${d.urgency.items.map(it=>`<div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+              <div style="width:22px;height:22px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff;font-weight:700">✓</div>
+              <span style="color:#374151;font-size:14px">${it}</span>
+            </div>`).join("")}
+            <div class="text-center mt-4">
+              <a href="${d.hero.btnHref}" style="display:inline-block;background:${d.hero.btnColor};color:${DARK};padding:14px 40px;border-radius:5px;text-decoration:none;font-weight:700;font-size:16px">${d.hero.btnText}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>`;
+  } else if (s !== "profesional") {
+    const imgOrder = d.about.imgLeft ? "" : "order-md-2";
+    const txtOrder = d.about.imgLeft ? "" : "order-md-1";
+    mid += `<section id="about" style="background:${d.about.bgColor};padding:56px 0">
+      <div class="container-fluid px-4">
+        <div class="row g-4 align-items-center">
+          <div class="col-12 col-md-6 ${imgOrder}">
+            ${d.about.mediaType==="video" && d.about.videoUrl
+              ? `<iframe src="${d.about.videoUrl}" style="width:100%;height:300px;border-radius:10px;border:none" allowfullscreen></iframe>`
+              : `<img src="${d.about.mediaUrl}" style="width:100%;border-radius:10px;object-fit:cover;max-height:340px;display:block" />`
+            }
+          </div>
+          <div class="col-12 col-md-6 ${txtOrder}">
+            <h2 style="color:${d.about.textColor};font-size:clamp(22px,3vw,30px);font-weight:700;margin-bottom:14px">${d.about.title}</h2>
+            ${d.about.desc.split("\n\n").map(pp=>`<p style="color:${d.about.textColor};opacity:.75;font-size:15px;line-height:1.8;margin-bottom:10px">${pp}</p>`).join("")}
+          </div>
         </div>
       </div>
     </section>`;
   }
 
-  const formHTML = (form, full) => {
+  // ── Form helper (footer/standalone) ─────────────────────────────────────────
+  const formHTML = (form) => {
     if (!form) return "";
-    if (form.type === "embed" && form.embedCode) return `<div style="padding:${full?"20px":"10px"}">${form.embedCode}</div>`;
-    const P2 = full ? "12px 14px" : "5px 7px";
-    const fields = (form.fields || []).map(field => `
-      <div style="margin-bottom:${full?12:5}px">
-        <label style="display:block;color:${form.textColor||"#fff"};font-size:${full?12:8}px;margin-bottom:${full?4:2}px;opacity:.85">${field.label}${field.required?'<span style="color:#ef4444;margin-left:2px">*</span>':""}</label>
+    if (form.type === "embed" && form.embedCode) return `<div class="p-3">${form.embedCode}</div>`;
+    const fields = (form.fields||[]).map(field=>`
+      <div class="mb-3">
+        <label style="display:block;color:${form.textColor||"#fff"};font-size:12px;margin-bottom:4px;opacity:.85">${field.label}${field.required?'<span style="color:#ef4444;margin-left:2px">*</span>':""}</label>
         ${field.type==="textarea"
-          ? `<textarea placeholder="${field.placeholder}" rows="${full?3:2}" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:${P2};color:${form.textColor||"#fff"};font-size:${full?13:9}px;resize:none"></textarea>`
-          : `<input type="${field.type||"text"}" placeholder="${field.placeholder}" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:${P2};color:${form.textColor||"#fff"};font-size:${full?13:9}px">`
-        }
+          ? `<textarea placeholder="${field.placeholder}" rows="3" class="w-100" style="background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:10px 12px;color:${form.textColor||"#fff"};font-size:13px;resize:none;box-sizing:border-box"></textarea>`
+          : `<input type="${field.type||"text"}" placeholder="${field.placeholder}" class="w-100" style="background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:10px 12px;color:${form.textColor||"#fff"};font-size:13px;box-sizing:border-box">`}
       </div>`).join("");
     return `
-      ${form.title?`<h3 style="color:${form.textColor||"#fff"};font-weight:700;font-size:${full?22:12}px;margin-bottom:${full?6:3}px">${form.title}</h3>`:""}
-      ${form.subtitle?`<p style="color:${form.textColor||"#ccc"};opacity:.75;font-size:${full?15:9}px;margin-bottom:${full?16:8}px">${form.subtitle}</p>`:""}
+      ${form.title?`<h3 style="color:${form.textColor||"#fff"};font-weight:700;font-size:20px;margin-bottom:5px">${form.title}</h3>`:""}
+      ${form.subtitle?`<p style="color:${form.textColor||"#ccc"};opacity:.75;font-size:14px;margin-bottom:16px">${form.subtitle}</p>`:""}
       ${fields}
-      ${form.privacyText?`<p style="color:${form.textColor||"#ccc"};font-size:${full?11:8}px;opacity:.6;line-height:1.5;margin-bottom:${full?10:5}px">${form.privacyText}</p>`:""}
-      ${form.showPrivacyCheck?`<label style="display:flex;align-items:center;gap:6px;font-size:${full?11:8}px;color:${form.textColor||"#ccc"};opacity:.75;margin-bottom:${full?12:6}px;cursor:pointer"><input type="checkbox"> <span>Acepto recibir otras comunicaciones</span></label>`:""}
-      <button style="background:${form.btnColor||ACC};color:${form.btnTextColor||DARK};border:none;border-radius:5px;padding:${full?"11px 28px":"5px 12px"};font-weight:700;font-size:${full?14:9}px;cursor:pointer">${form.btnText||"Enviar"}</button>
-    `;
+      ${form.privacyText?`<p style="color:${form.textColor||"#ccc"};font-size:11px;opacity:.6;line-height:1.5;margin-bottom:10px">${form.privacyText}</p>`:""}
+      ${form.showPrivacyCheck?`<label style="display:flex;align-items:center;gap:6px;font-size:11px;color:${form.textColor||"#ccc"};opacity:.75;margin-bottom:12px;cursor:pointer"><input type="checkbox"> <span>Acepto recibir otras comunicaciones</span></label>`:""}
+      <button class="w-100" style="background:${form.btnColor||ACC};color:${form.btnTextColor||DARK};border:none;border-radius:5px;padding:11px;font-weight:700;font-size:14px;cursor:pointer">${form.btnText||"Enviar"}</button>`;
   };
 
+  // ── Footer ──────────────────────────────────────────────────────────────────
   const showFooterForm = d.form && d.form.showInFooter;
   const ftr = s === "profesional"
-    ? `<footer id="footer" style="background:${d.footer.bgColor};padding:${full?46:22}px ${P} ${full?20:12}px">
-        ${showFooterForm
-          ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:${full?40:20}px;margin-bottom:${full?24:12}px">
-              <div>
-                <div style="color:#fff;font-weight:700;font-size:${full?20:12}px;margin-bottom:${full?8:5}px">${d.header.logoText}</div>
-                <p style="color:${d.footer.textColor};font-size:${full?15:8}px;line-height:1.65;margin-bottom:${full?12:6}px">${d.footer.desc}</p>
-                <div style="color:${d.footer.textColor};font-size:${full?12:8}px;margin-bottom:${full?5:3}px">📍 ${d.footer.address}</div>
-                <div style="color:${d.footer.textColor};font-size:${full?12:8}px">${d.footer.email}</div>
-              </div>
-              <div>${formHTML(d.form, full)}</div>
-            </div>`
-          : `<div style="margin-bottom:${full?24:12}px">
-              <div style="color:#fff;font-weight:700;font-size:${full?20:12}px;margin-bottom:${full?8:5}px">${d.header.logoText}</div>
-              <p style="color:${d.footer.textColor};font-size:${full?15:8}px;line-height:1.65;margin-bottom:${full?12:6}px">${d.footer.desc}</p>
-              <div style="color:${d.footer.textColor};font-size:${full?12:8}px;margin-bottom:${full?5:3}px">📍 ${d.footer.address}</div>
-              <div style="color:${d.footer.textColor};font-size:${full?12:8}px">${d.footer.email}</div>
-            </div>`
-        }
-        <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:${full?10:6}px;text-align:center">
-          <span style="color:${d.footer.textColor};font-size:${full?10:7}px;opacity:.6">${d.footer.copy}</span>
+    ? `<footer id="footer" style="background:${d.footer.bgColor};padding:52px 0 24px">
+        <div class="container-fluid px-4">
+          <div class="row g-4 mb-4">
+            <div class="col-12 ${showFooterForm?"col-md-6":"col-12"}">
+              <div style="color:#fff;font-weight:700;font-size:20px;margin-bottom:10px">${d.header.logoText}</div>
+              <p style="color:${d.footer.textColor};font-size:15px;line-height:1.7;margin-bottom:10px">${d.footer.desc}</p>
+              <div style="color:${d.footer.textColor};font-size:13px;margin-bottom:4px">📍 ${d.footer.address}</div>
+              <div style="color:${d.footer.textColor};font-size:13px">${d.footer.email}</div>
+            </div>
+            ${showFooterForm?`<div class="col-12 col-md-6">${formHTML(d.form)}</div>`:""}
+          </div>
+          <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:14px;text-align:center">
+            <span style="color:${d.footer.textColor};font-size:12px;opacity:.6">${d.footer.copy}</span>
+          </div>
         </div>
       </footer>`
-    : `<footer id="footer" style="background:${d.footer.bgColor};padding:${full?46:22}px ${P} ${full?20:12}px">
-        ${showFooterForm
-          ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:${full?36:16}px;margin-bottom:${full?24:12}px">
-              <div>
-                <div style="color:#fff;font-weight:700;font-size:${full?17:12}px;margin-bottom:7px">${d.footer.company}</div>
-                <p style="color:${d.footer.textColor};font-size:${full?15:9}px;line-height:1.65;margin-bottom:${full?10:5}px">${d.footer.desc}</p>
-                <div style="color:${d.footer.textColor};font-size:${full?11:8}px;margin-bottom:4px">${d.footer.email}</div>
-                <div style="color:${d.footer.textColor};font-size:${full?11:8}px;margin-bottom:4px">${d.footer.phone}</div>
-                <div style="color:${d.footer.textColor};font-size:${full?11:8}px">${d.footer.address}</div>
-              </div>
-              <div>${formHTML(d.form, full)}</div>
-            </div>`
-          : `<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:${full?36:16}px;margin-bottom:${full?24:12}px">
-              <div><div style="color:#fff;font-weight:700;font-size:${full?17:12}px;margin-bottom:7px">${d.footer.company}</div>
-                <p style="color:${d.footer.textColor};font-size:${full?15:9}px;line-height:1.65">${d.footer.desc}</p></div>
-              <div><div style="color:#fff;font-weight:600;font-size:${full?10:8}px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Contacto</div>
-                <div style="color:${d.footer.textColor};font-size:${full?11:8}px;margin-bottom:4px">${d.footer.email}</div>
-                <div style="color:${d.footer.textColor};font-size:${full?11:8}px;margin-bottom:4px">${d.footer.phone}</div>
-                <div style="color:${d.footer.textColor};font-size:${full?11:8}px">${d.footer.address}</div></div>
-              <div><div style="color:#fff;font-weight:600;font-size:${full?10:8}px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Navegación</div>
-                ${(d.header.menu || []).map(m => `<div style="margin-bottom:5px"><a href="${m.h}" style="color:${d.footer.textColor};font-size:${full?11:8}px;text-decoration:none;opacity:.8">${m.l}</a></div>`).join("")}
-              </div>
-            </div>`
-        }
-        <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:10px;text-align:center">
-          <span style="color:${d.footer.textColor};font-size:${full?10:8}px;opacity:.6">${d.footer.copy}</span>
+    : `<footer id="footer" style="background:${d.footer.bgColor};padding:52px 0 24px">
+        <div class="container-fluid px-4">
+          <div class="row g-4 mb-4">
+            <div class="col-12 col-md-5">
+              <div style="color:#fff;font-weight:700;font-size:18px;margin-bottom:8px">${d.footer.company||d.header.logoText}</div>
+              <p style="color:${d.footer.textColor};font-size:14px;line-height:1.7;margin-bottom:10px">${d.footer.desc}</p>
+              <div style="color:${d.footer.textColor};font-size:13px;margin-bottom:4px">${d.footer.email}</div>
+              <div style="color:${d.footer.textColor};font-size:13px;margin-bottom:4px">${d.footer.phone||""}</div>
+              <div style="color:${d.footer.textColor};font-size:13px">${d.footer.address}</div>
+            </div>
+            ${showFooterForm
+              ? `<div class="col-12 col-md-7">${formHTML(d.form)}</div>`
+              : `<div class="col-6 col-md-3 offset-md-1">
+                  <div style="color:#fff;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Contacto</div>
+                  <div style="color:${d.footer.textColor};font-size:13px;margin-bottom:5px">${d.footer.email}</div>
+                  <div style="color:${d.footer.textColor};font-size:13px;margin-bottom:5px">${d.footer.phone||""}</div>
+                  <div style="color:${d.footer.textColor};font-size:13px">${d.footer.address}</div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div style="color:#fff;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Navegación</div>
+                  ${(d.header.menu||[]).map(m=>`<div style="margin-bottom:6px"><a href="${m.h}" style="color:${d.footer.textColor};font-size:13px;text-decoration:none;opacity:.8">${m.l}</a></div>`).join("")}
+                </div>`
+            }
+          </div>
+          <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:14px;text-align:center">
+            <span style="color:${d.footer.textColor};font-size:12px;opacity:.6">${d.footer.copy}</span>
+          </div>
         </div>
       </footer>`;
 
@@ -604,7 +667,20 @@ const buildExportHTML = (d) => {
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${d.name}</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif}.hs{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1s}.hs.a{opacity:1}</style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif}
+.hs{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1s}
+.hs.a{opacity:1}
+img{max-width:100%;height:auto}
+input,textarea,select,button{font-family:inherit}
+@media(max-width:767px){
+  h1{font-size:clamp(22px,6vw,36px)!important}
+  h2{font-size:clamp(18px,5vw,28px)!important}
+  section{padding-top:40px!important;padding-bottom:40px!important}
+  footer{padding-top:40px!important}
+}
+</style>
 </head><body>
 ${buildPreviewHTML(d, true).replace(/class="hero-sl"/g, 'class="hero-sl hs"')}
 <script>
