@@ -2000,10 +2000,11 @@ const LivePreview = ({ data }) => {
 
 // ─── LANDINGS LIST PAGE ───────────────────────────────────────────────────────
 const LandingsList = ({ landings, onNew, onEdit, onPreview, onDelete, onDownload, onPublish }) => {
-  const [copied, setCopied] = React.useState(null);
+  const [copied, setCopied] = useState(null);
+  const [origin, setOrigin] = useState("");
+  useEffect(() => { setOrigin(window.location.origin); }, []);
   const copyUrl = (id, url) => {
-    const full = window.location.origin + url;
-    navigator.clipboard.writeText(full).then(() => { setCopied(id); setTimeout(() => setCopied(null), 1800); });
+    navigator.clipboard.writeText(origin + url).then(() => { setCopied(id); setTimeout(() => setCopied(null), 1800); });
   };
   return (
     <div style={{ flex: 1, overflow: "auto", padding: 28, background: UI_BG, fontFamily: UI_FONT }}>
@@ -2048,7 +2049,7 @@ const LandingsList = ({ landings, onNew, onEdit, onPreview, onDelete, onDownload
                     <div style={{ fontSize: 9, color: "#0369a1", fontWeight: 600, marginBottom: 3, textTransform: "uppercase", letterSpacing: ".4px" }}>URL Pública</div>
                     <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
                       <div style={{ flex: 1, fontSize: 9, color: "#0c4a6e", background: "#e0f2fe", borderRadius: 4, padding: "3px 6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "monospace" }}>
-                        {window.location.origin}{l.publishedUrl}
+                        {origin}{l.publishedUrl}
                       </div>
                       <button onClick={() => copyUrl(l.id, l.publishedUrl)} title="Copiar URL"
                         style={{ padding: "3px 7px", border: "none", borderRadius: 4, background: copied === l.id ? "#22c55e" : "#0ea5e9", color: "#fff", cursor: "pointer", fontSize: 9, fontWeight: 700, flexShrink: 0, transition: "background .2s" }}>
