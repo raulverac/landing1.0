@@ -1999,51 +1999,85 @@ const LivePreview = ({ data }) => {
 };
 
 // ─── LANDINGS LIST PAGE ───────────────────────────────────────────────────────
-const LandingsList = ({ landings, onNew, onEdit, onPreview, onDelete, onDownload }) => (
-  <div style={{ flex: 1, overflow: "auto", padding: 28, background: UI_BG, fontFamily: UI_FONT }}>
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-      <div>
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: UI_TEXT, marginBottom: 3 }}>Landings Creadas</h2>
-        <p style={{ fontSize: 12, color: UI_MUTED }}>{landings.length} landing{landings.length !== 1 ? "s" : ""} guardada{landings.length !== 1 ? "s" : ""}</p>
+const LandingsList = ({ landings, onNew, onEdit, onPreview, onDelete, onDownload, onPublish }) => {
+  const [copied, setCopied] = React.useState(null);
+  const copyUrl = (id, url) => {
+    const full = window.location.origin + url;
+    navigator.clipboard.writeText(full).then(() => { setCopied(id); setTimeout(() => setCopied(null), 1800); });
+  };
+  return (
+    <div style={{ flex: 1, overflow: "auto", padding: 28, background: UI_BG, fontFamily: UI_FONT }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+        <div>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: UI_TEXT, marginBottom: 3 }}>Landings Creadas</h2>
+          <p style={{ fontSize: 12, color: UI_MUTED }}>{landings.length} landing{landings.length !== 1 ? "s" : ""} guardada{landings.length !== 1 ? "s" : ""}</p>
+        </div>
+        <button onClick={onNew} style={{ padding: "9px 20px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: UI_SHADOW_MD }}>+ Nueva Landing</button>
       </div>
-      <button onClick={onNew} style={{ padding: "9px 20px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: UI_SHADOW_MD }}>+ Nueva Landing</button>
-    </div>
-    {landings.length === 0 ? (
-      <div style={{ textAlign: "center", padding: "60px 40px", background: UI_CARD, borderRadius: UI_RADIUS + 4, boxShadow: UI_SHADOW, color: UI_MUTED }}>
-        <div style={{ fontSize: 44, marginBottom: 14, opacity: .25 }}>🗂</div>
-        <p style={{ marginBottom: 14, fontSize: 14 }}>No hay landings creadas aún.</p>
-        <button onClick={onNew} style={{ padding: "9px 22px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Crear primera landing</button>
-      </div>
-    ) : (
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 16 }}>
-        {landings.map(l => {
-          const utm = buildUTM(l.utm || {});
-          return (
-            <div key={l.id} style={{ background: UI_CARD, borderRadius: UI_RADIUS + 2, boxShadow: UI_SHADOW, overflow: "hidden" }}>
-              <div onClick={() => onPreview(l.id)} style={{ height: 110, position: "relative", cursor: "pointer", background: l.header.bgColor, overflow: "hidden" }}>
-                {l.hero.slides?.[0] && <img src={l.hero.slides[0]} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: .5 }} />}
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.44)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 10 }}>
-                  <div style={{ color: "#fff", fontWeight: 700, fontSize: 13, textAlign: "center" }}>{l.name}</div>
-                  <span style={{ background: UI_PRIMARY, color: "#fff", fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 20, marginTop: 5 }}>
-                    {SNAMES[SIDS.indexOf(l.struct || "clasica")] || "Clásica"}
-                  </span>
-                  {utm && <span style={{ background: "#22c55e", color: "#fff", fontSize: 8, padding: "1px 6px", borderRadius: 20, marginTop: 3 }}>UTM ✓</span>}
+      {landings.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "60px 40px", background: UI_CARD, borderRadius: UI_RADIUS + 4, boxShadow: UI_SHADOW, color: UI_MUTED }}>
+          <div style={{ fontSize: 44, marginBottom: 14, opacity: .25 }}>🗂</div>
+          <p style={{ marginBottom: 14, fontSize: 14 }}>No hay landings creadas aún.</p>
+          <button onClick={onNew} style={{ padding: "9px 22px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Crear primera landing</button>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 16 }}>
+          {landings.map(l => {
+            const utm = buildUTM(l.utm || {});
+            const isPublished = !!l.publishedUrl;
+            return (
+              <div key={l.id} style={{ background: UI_CARD, borderRadius: UI_RADIUS + 2, boxShadow: UI_SHADOW, overflow: "hidden" }}>
+                {/* Thumbnail */}
+                <div onClick={() => onPreview(l.id)} style={{ height: 110, position: "relative", cursor: "pointer", background: l.header.bgColor, overflow: "hidden" }}>
+                  {l.hero.slides?.[0] && <img src={l.hero.slides[0]} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: .5 }} />}
+                  <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.44)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 10 }}>
+                    <div style={{ color: "#fff", fontWeight: 700, fontSize: 13, textAlign: "center" }}>{l.name}</div>
+                    <span style={{ background: UI_PRIMARY, color: "#fff", fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 20, marginTop: 5 }}>
+                      {SNAMES[SIDS.indexOf(l.struct || "clasica")] || "Clásica"}
+                    </span>
+                    <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+                      {utm && <span style={{ background: "#22c55e", color: "#fff", fontSize: 8, padding: "1px 6px", borderRadius: 20 }}>UTM</span>}
+                      {isPublished && <span style={{ background: "#0ea5e9", color: "#fff", fontSize: 8, padding: "1px 6px", borderRadius: 20 }}>Publicada</span>}
+                    </div>
+                  </div>
+                  <div style={{ position: "absolute", top: 7, right: 7, background: "rgba(0,0,0,.5)", color: "#fff", fontSize: 9, padding: "2px 5px", borderRadius: 5 }}>{l.createdAt || ""}</div>
                 </div>
-                <div style={{ position: "absolute", top: 7, right: 7, background: "rgba(0,0,0,.5)", color: "#fff", fontSize: 9, padding: "2px 5px", borderRadius: 5 }}>{l.createdAt || ""}</div>
+                {/* URL pública */}
+                {isPublished && (
+                  <div style={{ padding: "6px 10px", background: "#f0f9ff", borderTop: "1px solid #e0f2fe" }}>
+                    <div style={{ fontSize: 9, color: "#0369a1", fontWeight: 600, marginBottom: 3, textTransform: "uppercase", letterSpacing: ".4px" }}>URL Pública</div>
+                    <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
+                      <div style={{ flex: 1, fontSize: 9, color: "#0c4a6e", background: "#e0f2fe", borderRadius: 4, padding: "3px 6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "monospace" }}>
+                        {window.location.origin}{l.publishedUrl}
+                      </div>
+                      <button onClick={() => copyUrl(l.id, l.publishedUrl)} title="Copiar URL"
+                        style={{ padding: "3px 7px", border: "none", borderRadius: 4, background: copied === l.id ? "#22c55e" : "#0ea5e9", color: "#fff", cursor: "pointer", fontSize: 9, fontWeight: 700, flexShrink: 0, transition: "background .2s" }}>
+                        {copied === l.id ? "✓" : "Copiar"}
+                      </button>
+                      <a href={l.publishedUrl} target="_blank" rel="noreferrer" title="Abrir en nueva pestaña"
+                        style={{ padding: "3px 7px", border: "none", borderRadius: 4, background: "#f1f5f9", color: "#475569", cursor: "pointer", fontSize: 9, fontWeight: 700, textDecoration: "none", flexShrink: 0 }}>
+                        Abrir
+                      </a>
+                    </div>
+                    {l.publishedAt && <div style={{ fontSize: 8, color: "#94a3b8", marginTop: 3 }}>Publicada el {l.publishedAt}</div>}
+                  </div>
+                )}
+                {/* Acciones */}
+                <div style={{ padding: "8px 10px", display: "flex", gap: 5 }}>
+                  <button onClick={() => onPreview(l.id)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 10, fontWeight: 600, color: UI_MUTED }}>Vista</button>
+                  <button onClick={() => onEdit(l.id)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: "none", background: "#ede9ff", color: UI_PRIMARY, cursor: "pointer", fontSize: 10, fontWeight: 700 }}>Editar</button>
+                  <button onClick={() => onPublish(l.id)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: "none", background: isPublished ? "#dbeafe" : "#f0fdf4", color: isPublished ? "#1d4ed8" : "#15803d", cursor: "pointer", fontSize: 10, fontWeight: 700 }}>{isPublished ? "Re-pub." : "Publicar"}</button>
+                  <button onClick={() => onDownload(l.id)} style={{ padding: "6px 9px", borderRadius: 6, border: "none", background: "#dcfce7", color: "#16a34a", cursor: "pointer", fontSize: 10, fontWeight: 700 }}>HTML</button>
+                  <button onClick={() => onDelete(l.id)} style={{ padding: "6px 10px", borderRadius: 6, border: "none", background: "#fee2e2", color: "#ef4444", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>✕</button>
+                </div>
               </div>
-              <div style={{ padding: "8px 10px", display: "flex", gap: 5 }}>
-                <button onClick={() => onPreview(l.id)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 10, fontWeight: 600, color: UI_MUTED }}>Vista</button>
-                <button onClick={() => onEdit(l.id)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: "none", background: "#ede9ff", color: UI_PRIMARY, cursor: "pointer", fontSize: 10, fontWeight: 700 }}>Editar</button>
-                <button onClick={() => onDownload(l.id)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: "none", background: "#dcfce7", color: "#16a34a", cursor: "pointer", fontSize: 10, fontWeight: 700 }}>HTML</button>
-                <button onClick={() => onDelete(l.id)} style={{ padding: "6px 10px", borderRadius: 6, border: "none", background: "#fee2e2", color: "#ef4444", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>✕</button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    )}
-  </div>
-);
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 export default function LandingBuilder() {
@@ -2082,6 +2116,30 @@ export default function LandingBuilder() {
     a.download = (d.name || "landing").replace(/\s+/g, "-").toLowerCase() + ".html";
     a.click();
   }, [current, landings]);
+
+  const doPublish = useCallback(async (id) => {
+    const landing = id ? landings.find(l => l.id === id) : current;
+    if (!landing) return;
+    try {
+      showToast("⏳ Publicando...", "info");
+      const html = buildExportHTML(landing);
+      const res = await fetch("/api/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html, name: landing.name, landingId: landing.id, prevFilename: landing.publishedFilename || null }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+      const updated = { ...landing, publishedUrl: data.url, publishedFilename: data.filename, publishedAt: new Date().toLocaleDateString("es-CL") };
+      const newList = landings.map(l => l.id === updated.id ? updated : l);
+      await saveLandings(newList);
+      setLandings(newList);
+      if (current.id === updated.id) setCurrent(updated);
+      showToast("🌐 Landing publicada exitosamente");
+    } catch (e) {
+      showToast("Error al publicar: " + e.message, "error");
+    }
+  }, [current, landings, showToast]);
 
   const doDelete = useCallback(async (id) => {
     if (!confirm("¿Eliminar esta landing?")) return;
@@ -2176,6 +2234,7 @@ export default function LandingBuilder() {
           onPreview={doPreview}
           onDelete={doDelete}
           onDownload={doDownload}
+          onPublish={doPublish}
         />
       )}
 
