@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manual de Uso — LandingBuilder</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --primary: #7267ef;
+    --primary-soft: #ede9ff;
+    --text: #293240;
+    --muted: #5b6b79;
+    --border: #e9ecef;
+    --bg: #f0f2f8;
+    --card: #ffffff;
+    --accent: #e6a817;
+    --dark: #1a2535;
+    --green: #22c55e;
+    --radius: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    color: var(--text);
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* ── PORTADA ── */
+  .cover {
+    width: 100%;
+    height: 100vh;
+    min-height: 800px;
+    background: linear-gradient(135deg, #1a2535 0%, #2d3f5e 60%, #7267ef 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px;
+    page-break-after: always;
+  }
+  .cover-logo {
+    width: 72px; height: 72px;
+    background: #7267ef;
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; font-weight: 800; color: #fff;
+    margin: 0 auto 28px;
+    box-shadow: 0 8px 32px rgba(114,103,239,.5);
+  }
+  .cover h1 { font-size: 48px; font-weight: 800; color: #fff; margin-bottom: 12px; letter-spacing: -1px; }
+  .cover h2 { font-size: 20px; font-weight: 400; color: rgba(255,255,255,.7); margin-bottom: 40px; }
+  .cover-divider { width: 60px; height: 3px; background: #7267ef; border-radius: 2px; margin: 0 auto 40px; }
+  .cover-meta { color: rgba(255,255,255,.5); font-size: 13px; }
+  .cover-meta strong { color: rgba(255,255,255,.8); }
+  .cover-badge {
+    display: inline-block;
+    background: rgba(114,103,239,.3);
+    border: 1px solid rgba(114,103,239,.5);
+    color: #c4bcff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+    letter-spacing: .5px;
+  }
+
+  /* ── ÍNDICE ── */
+  .toc-page {
+    padding: 60px 80px;
+    page-break-after: always;
+    min-height: 100vh;
+  }
+  .toc-page h2 { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 32px; }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 13px;
+  }
+  .toc-item:last-child { border-bottom: none; }
+  .toc-num { width: 28px; height: 28px; background: var(--primary-soft); color: var(--primary); border-radius: 7px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .toc-label { flex: 1; font-weight: 500; color: var(--text); }
+  .toc-page-num { color: var(--muted); font-size: 12px; }
+  .toc-section { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; padding: 20px 0 8px; }
+
+  /* ── CONTENIDO ── */
+  .page {
+    padding: 60px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--primary);
+  }
+  .section-num {
+    width: 36px; height: 36px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 9px;
+    font-size: 16px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-header h2 { font-size: 22px; font-weight: 800; color: var(--text); }
+
+  h3 { font-size: 15px; font-weight: 700; color: var(--text); margin: 24px 0 10px; }
+  h4 { font-size: 13px; font-weight: 700; color: var(--primary); margin: 16px 0 6px; text-transform: uppercase; letter-spacing: .4px; }
+  p { margin-bottom: 12px; color: var(--muted); }
+  ul, ol { margin-left: 20px; margin-bottom: 12px; color: var(--muted); }
+  li { margin-bottom: 5px; }
+  strong { color: var(--text); }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body { flex: 1; }
+  .callout-body strong { font-size: 12px; font-weight: 700; display: block; margin-bottom: 4px; }
+  .callout-body p { margin: 0; font-size: 12px; line-height: 1.6; }
+  .callout.tip { background: #ede9ff; border-left: 3px solid var(--primary); }
+  .callout.tip .callout-body strong { color: var(--primary); }
+  .callout.info { background: #e0f2fe; border-left: 3px solid #0ea5e9; }
+  .callout.info .callout-body strong { color: #0369a1; }
+  .callout.warning { background: #fef9c3; border-left: 3px solid #eab308; }
+  .callout.warning .callout-body strong { color: #854d0e; }
+  .callout.success { background: #dcfce7; border-left: 3px solid var(--green); }
+  .callout.success .callout-body strong { color: #15803d; }
+
+  /* ── CARDS DE FEATURE ── */
+  .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .feature-card {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+  }
+  .feature-card h4 { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: var(--text); }
+  .feature-card p { margin: 0; font-size: 11px; color: var(--muted); }
+  .feature-card .icon { font-size: 20px; margin-bottom: 8px; }
+
+  /* ── STEPS ── */
+  .steps { margin: 16px 0; }
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; }
+  .step-body strong { font-size: 13px; color: var(--text); display: block; margin-bottom: 3px; }
+  .step-body p { margin: 0; font-size: 12px; color: var(--muted); }
+
+  /* ── TABLA ── */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12px; }
+  th { background: var(--primary); color: #fff; padding: 9px 12px; text-align: left; font-weight: 600; font-size: 11px; letter-spacing: .3px; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg); }
+
+  /* ── CÓDIGO INLINE ── */
+  code {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--primary);
+  }
+  pre {
+    background: var(--dark);
+    color: #a8d8a8;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-size: 12px;
+    overflow: auto;
+    margin: 12px 0;
+  }
+
+  /* ── UI MOCK ── */
+  .ui-mock {
+    background: var(--dark);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 16px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  }
+  .ui-mock-bar {
+    background: #fff;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ui-mock-logo { width: 28px; height: 28px; background: var(--primary); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 14px; }
+  .ui-mock-title { font-weight: 700; color: var(--text); font-size: 13px; }
+  .ui-mock-sep { width: 1px; height: 18px; background: var(--border); }
+  .ui-mock-nav { display: flex; gap: 4px; }
+  .ui-mock-btn { padding: 5px 11px; border-radius: 6px; font-size: 10px; font-weight: 600; }
+  .ui-mock-btn.active { background: #ede9ff; color: var(--primary); }
+  .ui-mock-btn.plain { color: var(--muted); }
+  .ui-mock-actions { margin-left: auto; display: flex; gap: 6px; }
+  .ui-mock-action { padding: 5px 12px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+  .ui-mock-action.save { background: var(--green); color: #fff; }
+  .ui-mock-action.html { background: var(--primary); color: #fff; }
+  .ui-mock-body { display: flex; height: 200px; }
+  .ui-mock-sidebar {
+    width: 130px;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    padding: 8px;
+    flex-shrink: 0;
+  }
+  .ui-mock-tab { padding: 7px 8px; font-size: 9px; font-weight: 600; border-radius: 0; border-bottom: 2px solid transparent; color: var(--muted); display: inline-block; }
+  .ui-mock-tab.act { border-bottom-color: var(--primary); color: var(--primary); }
+  .ui-mock-panel { background: #fff; border-radius: 6px; margin: 8px 0; padding: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .ui-mock-panel-title { font-size: 8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  .ui-mock-field { height: 18px; background: var(--bg); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 5px; }
+  .ui-mock-preview {
+    flex: 1;
+    background: var(--bg);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 10px;
+  }
+  .ui-mock-preview-inner { background: #fff; border-radius: 6px; width: 100%; box-shadow: 0 2px 12px rgba(114,103,239,.12); overflow: hidden; }
+  .ui-mock-preview-header { background: var(--dark); height: 22px; }
+  .ui-mock-preview-hero { background: linear-gradient(135deg, #4a5568, #7267ef); height: 50px; }
+  .ui-mock-preview-body { height: 30px; background: #f9f9f9; display: flex; gap: 4px; padding: 6px; }
+  .ui-mock-preview-col { flex: 1; background: var(--border); border-radius: 3px; }
+
+  /* ── BADGE ── */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+  .badge.primary { background: var(--primary-soft); color: var(--primary); }
+  .badge.green { background: #dcfce7; color: #15803d; }
+  .badge.yellow { background: #fef9c3; color: #854d0e; }
+
+  /* ── PRINT ── */
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { page-break-inside: avoid; }
+    .no-break { page-break-inside: avoid; }
+    h2, h3 { page-break-after: avoid; }
+    .section-header { page-break-after: avoid; }
+  }
+
+  .page-break { page-break-before: always; }
+  .mt-32 { margin-top: 32px; }
+  .mb-8 { margin-bottom: 8px; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ PORTADA ═══════════════════════════════ -->
+<div class="cover">
+  <div class="cover-badge">VERSIÓN 1.0 · 2026</div>
+  <div class="cover-logo">L</div>
+  <h1>LandingBuilder</h1>
+  <h2>Generador de Landing Pages</h2>
+  <div class="cover-divider"></div>
+  <p style="color:rgba(255,255,255,.6);font-size:14px;max-width:420px;line-height:1.8;margin-bottom:40px;">
+    Crea, personaliza y exporta landing pages profesionales sin código, con soporte para múltiples estructuras, formularios configurables y parámetros UTM.
+  </p>
+  <div class="cover-meta">
+    <strong>Manual de Usuario Completo</strong><br>
+    Mentalidad Web · rvera@mentalidadweb.com
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ ÍNDICE ═══════════════════════════════ -->
+<div class="toc-page">
+  <h2>Tabla de Contenidos</h2>
+
+  <div class="toc-section">Introducción</div>
+  <div class="toc-item"><div class="toc-num">1</div><div class="toc-label">¿Qué es LandingBuilder?</div><div class="toc-page-num">3</div></div>
+  <div class="toc-item"><div class="toc-num">2</div><div class="toc-label">Interfaz principal</div><div class="toc-page-num">4</div></div>
+
+  <div class="toc-section">Flujo de trabajo</div>
+  <div class="toc-item"><div class="toc-num">3</div><div class="toc-label">Crear una landing paso a paso</div><div class="toc-page-num">5</div></div>
+  <div class="toc-item"><div class="toc-num">4</div><div class="toc-label">Estructuras disponibles</div><div class="toc-page-num">6</div></div>
+
+  <div class="toc-section">Panel Editor</div>
+  <div class="toc-item"><div class="toc-num">5</div><div class="toc-label">Pestaña Header</div><div class="toc-page-num">8</div></div>
+  <div class="toc-item"><div class="toc-num">6</div><div class="toc-label">Pestaña Hero</div><div class="toc-page-num">9</div></div>
+  <div class="toc-item"><div class="toc-num">7</div><div class="toc-label">Pestaña Servicios / Contenido</div><div class="toc-page-num">10</div></div>
+  <div class="toc-item"><div class="toc-num">8</div><div class="toc-label">Pestaña Formulario</div><div class="toc-page-num">11</div></div>
+  <div class="toc-item"><div class="toc-num">9</div><div class="toc-label">Pestaña UTM</div><div class="toc-page-num">12</div></div>
+  <div class="toc-item"><div class="toc-num">10</div><div class="toc-label">Pestaña Footer</div><div class="toc-page-num">13</div></div>
+
+  <div class="toc-section">Estructuras especiales</div>
+  <div class="toc-item"><div class="toc-num">11</div><div class="toc-label">Estructura UNAB (Formato Universidad)</div><div class="toc-page-num">14</div></div>
+  <div class="toc-item"><div class="toc-num">12</div><div class="toc-label">Estructura Profesional</div><div class="toc-page-num">15</div></div>
+
+  <div class="toc-section">Exportación y gestión</div>
+  <div class="toc-item"><div class="toc-num">13</div><div class="toc-label">Guardar y gestionar Landings</div><div class="toc-page-num">16</div></div>
+  <div class="toc-item"><div class="toc-num">14</div><div class="toc-label">Exportar HTML</div><div class="toc-page-num">16</div></div>
+  <div class="toc-item"><div class="toc-num">15</div><div class="toc-label">Referencia rápida</div><div class="toc-page-num">17</div></div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 1 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>¿Qué es LandingBuilder?</h2>
+  </div>
+
+  <p>LandingBuilder es una herramienta web que permite crear <strong>landing pages profesionales</strong> de forma visual, sin necesidad de escribir código. El resultado es un archivo HTML listo para publicar en cualquier servidor o plataforma.</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="icon">🎨</div>
+      <h4>Editor visual en tiempo real</h4>
+      <p>Cada cambio que realizas en el panel izquierdo se refleja instantáneamente en la vista previa derecha.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📐</div>
+      <h4>6 estructuras prediseñadas</h4>
+      <p>Plantillas optimizadas para distintos objetivos: ventas, beneficios, urgencia, storytelling y más.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📋</div>
+      <h4>Formularios configurables</h4>
+      <p>Define campos, posición (hero o footer) y estilos. También soporta embed de código externo.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔗</div>
+      <h4>Parámetros UTM integrados</h4>
+      <p>Configura UTMs una sola vez y se aplican automáticamente a todos los enlaces de la landing.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📱</div>
+      <h4>Responsive con Bootstrap</h4>
+      <p>El HTML exportado incluye Bootstrap 5.3 para visualización correcta en móviles y tablets.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">💾</div>
+      <h4>Gestión de landings</h4>
+      <p>Guarda múltiples landings en el navegador, edítalas, duplícalas o descárgalas cuando necesites.</p>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>Sin instalación adicional</strong>
+      <p>LandingBuilder funciona completamente en el navegador. El archivo HTML exportado incluye todo lo necesario (Bootstrap CDN, estilos, JavaScript) para funcionar de forma independiente.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 2 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2>Interfaz Principal</h2>
+  </div>
+
+  <div class="ui-mock">
+    <div class="ui-mock-bar">
+      <div class="ui-mock-logo">L</div>
+      <div class="ui-mock-title">LandingBuilder</div>
+      <div class="ui-mock-sep"></div>
+      <div class="ui-mock-nav">
+        <div class="ui-mock-btn active">Estructura</div>
+        <div class="ui-mock-btn plain">Editor</div>
+        <div class="ui-mock-btn plain">Mis Landings</div>
+      </div>
+      <div class="ui-mock-actions">
+        <div class="ui-mock-action save">Guardar</div>
+        <div class="ui-mock-action html">↓ HTML</div>
+      </div>
+    </div>
+    <div class="ui-mock-body">
+      <div class="ui-mock-sidebar">
+        <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:8px">
+          <div class="ui-mock-tab act">Header</div>
+          <div class="ui-mock-tab">Hero</div>
+          <div class="ui-mock-tab">…</div>
+        </div>
+        <div class="ui-mock-panel">
+          <div class="ui-mock-panel-title">Logo y Colores</div>
+          <div class="ui-mock-field"></div>
+          <div class="ui-mock-field"></div>
+        </div>
+        <div class="ui-mock-panel">
+          <div class="ui-mock-panel-title">Menú</div>
+          <div class="ui-mock-field"></div>
+        </div>
+      </div>
+      <div class="ui-mock-preview">
+        <div class="ui-mock-preview-inner">
+          <div class="ui-mock-preview-header"></div>
+          <div class="ui-mock-preview-hero"></div>
+          <div class="ui-mock-preview-body">
+            <div class="ui-mock-preview-col"></div>
+            <div class="ui-mock-preview-col"></div>
+            <div class="ui-mock-preview-col"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Zonas de la interfaz</h3>
+  <table>
+    <tr><th>Zona</th><th>Descripción</th></tr>
+    <tr><td><strong>Barra Superior (TopNav)</strong></td><td>Navegación entre páginas y botones de acción global (Nueva, Vista Previa, Guardar, Descargar HTML).</td></tr>
+    <tr><td><strong>Panel Editor (izquierda)</strong></td><td>Pestañas temáticas con todos los controles de edición: textos, colores, imágenes, formularios, etc.</td></tr>
+    <tr><td><strong>Vista Previa (derecha)</strong></td><td>Muestra en tiempo real cómo quedará la landing. Se actualiza con cada cambio sin necesidad de guardar.</td></tr>
+    <tr><td><strong>Página Estructura</strong></td><td>Selector inicial de plantilla con miniaturas animadas (wireframes).</td></tr>
+    <tr><td><strong>Mis Landings</strong></td><td>Lista de todas las landings guardadas con opciones de editar, previsualizar, descargar y eliminar.</td></tr>
+  </table>
+
+  <div class="callout info">
+    <div class="callout-icon">ℹ️</div>
+    <div class="callout-body">
+      <strong>Vista Previa vs. Vista Completa</strong>
+      <p>La vista previa del editor muestra la landing en un ancho máximo de 580px (formato móvil/tablet). Para ver el resultado a pantalla completa, usa el botón <strong>"Vista Previa"</strong> en la barra superior.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 3 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2>Crear una Landing Paso a Paso</h2>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Elegir estructura</strong>
+        <p>Al entrar a la aplicación se muestra la página "Estructura". Haz clic en la plantilla que mejor se adapte a tu objetivo. Verás un wireframe animado de cada opción. Presiona <strong>"Usar esta estructura y editar →"</strong>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Nombrar la landing</strong>
+        <p>En el panel editor, el primer campo es el <strong>Nombre de la Landing</strong>. Escribe un nombre descriptivo (ej: "Campaña Enero 2026 - Producto X"). Este nombre aparecerá en "Mis Landings" y como título del archivo HTML.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Configurar el Header</strong>
+        <p>En la pestaña <strong>Header</strong> define el logo (texto o imagen), tamaño del logo, colores de fondo y texto, y los ítems del menú de navegación.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Configurar el Hero</strong>
+        <p>En la pestaña <strong>Hero</strong> carga hasta 3 imágenes para el carrusel, escribe el título, descripción y botón de llamada a la acción. Ajusta el overlay oscuro con el slider.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <strong>Editar el contenido central</strong>
+        <p>La pestaña de contenido varía según la estructura (Servicios, Beneficios, Urgencia, etc.). Agrega, edita o elimina tarjetas de contenido.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <strong>Configurar el Formulario</strong>
+        <p>En la pestaña <strong>Formulario</strong> define el tipo (básico o embed), campos, y posición (Hero y/o Footer). Personaliza colores y botón.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-body">
+        <strong>Agregar UTMs (opcional)</strong>
+        <p>En la pestaña <strong>UTM</strong> llena source, medium, campaign, content y term. Se aplicarán a todos los enlaces de la landing automáticamente.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">8</div>
+      <div class="step-body">
+        <strong>Guardar y exportar</strong>
+        <p>Usa <strong>"Guardar"</strong> para guardar en "Mis Landings" y <strong>"↓ HTML"</strong> para descargar el archivo listo para publicar.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <div class="callout-icon">✅</div>
+    <div class="callout-body">
+      <strong>Tip de productividad</strong>
+      <p>Puedes guardar en cualquier momento con el botón <strong>"Guardar"</strong> y seguir editando. Los cambios guardados se mantienen aunque cierres el navegador.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 4 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2>Estructuras Disponibles</h2>
+  </div>
+
+  <p>LandingBuilder ofrece <strong>6 estructuras prediseñadas</strong>, cada una optimizada para un tipo diferente de campaña:</p>
+
+  <table>
+    <tr><th>#</th><th>Nombre</th><th>Ideal para</th><th>Secciones incluidas</th></tr>
+    <tr>
+      <td><span class="badge primary">1</span></td>
+      <td><strong>Clásica</strong></td>
+      <td>Productos o servicios generales</td>
+      <td>Header · Hero · Servicios (3 tarjetas) · Nosotros · Formulario · Footer</td>
+    </tr>
+    <tr>
+      <td><span class="badge primary">2</span></td>
+      <td><strong>Beneficios</strong></td>
+      <td>Destacar ventajas competitivas</td>
+      <td>Header · Hero · Beneficios (3 tarjetas con estrellas) · Nosotros · Formulario · Footer</td>
+    </tr>
+    <tr>
+      <td><span class="badge primary">3</span></td>
+      <td><strong>Storytelling</strong></td>
+      <td>Conectar emocionalmente, marca personal</td>
+      <td>Header · Hero · Historia (pasos numerados) · Nosotros · Formulario · Footer</td>
+    </tr>
+    <tr>
+      <td><span class="badge primary">4</span></td>
+      <td><strong>Urgencia</strong></td>
+      <td>Webinars, ofertas limitadas, eventos</td>
+      <td>Header · Hero · Urgencia (contador + ítems) · Nosotros · Formulario · Footer</td>
+    </tr>
+    <tr>
+      <td><span class="badge primary">5</span></td>
+      <td><strong>Profesional</strong></td>
+      <td>Agencias, empresas B2B, portafolio</td>
+      <td>Header · Hero · Ecosistema · Catálogo · Fases · Formulario en Footer</td>
+    </tr>
+    <tr>
+      <td><span class="badge primary">6</span></td>
+      <td><strong>UNAB</strong></td>
+      <td>Instituciones educativas, universidades</td>
+      <td>Hero con imagen de fondo · Panel de programas · Formulario de postulación · Footer de acreditaciones</td>
+    </tr>
+  </table>
+
+  <div class="callout warning">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-body">
+      <strong>Cambio de estructura</strong>
+      <p>Si cambias de estructura desde "Mis Landings → Nueva" o desde la página "Estructura", se cargará la plantilla con valores por defecto. Los datos que tenías en el editor se perderán si no los guardaste antes.</p>
+    </div>
+  </div>
+
+  <h3>Pestañas del editor por estructura</h3>
+  <p>La pestaña de contenido central cambia de nombre según la estructura seleccionada:</p>
+
+  <table>
+    <tr><th>Estructura</th><th>Pestaña "Servicios"</th><th>Pestaña "Nosotros"</th></tr>
+    <tr><td>Clásica</td><td>Servicios</td><td>Nosotros</td></tr>
+    <tr><td>Beneficios</td><td>Beneficios</td><td>Nosotros</td></tr>
+    <tr><td>Storytelling</td><td>Servicios</td><td>Historia</td></tr>
+    <tr><td>Urgencia</td><td>Urgencia</td><td>Nosotros</td></tr>
+    <tr><td>Profesional</td><td>Ecosistema</td><td>Catálogo</td></tr>
+    <tr><td>UNAB</td><td>Programas</td><td>Acreditaciones</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════ SEC 5 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2>Pestaña Header</h2>
+  </div>
+
+  <p>El header es la barra de navegación superior que aparece fija en todas las páginas de la landing.</p>
+
+  <h3>Panel: Logo y Colores</h3>
+  <table>
+    <tr><th>Campo</th><th>Descripción</th></tr>
+    <tr><td><strong>Texto del Logo</strong></td><td>Nombre de la marca que aparece si no hay imagen de logo. Se muestra en la barra superior.</td></tr>
+    <tr><td><strong>Logo (URL o subir imagen)</strong></td><td>Sube una imagen desde tu dispositivo o pega una URL externa. Formatos: PNG, JPG, SVG, WebP. Si hay logo, oculta el texto del logo.</td></tr>
+    <tr><td><strong>Tamaño del logo</strong></td><td>Slider de 16px a 120px. Controla el alto de la imagen del logo en el header.</td></tr>
+    <tr><td><strong>Color de fondo</strong></td><td>Color del header. Incluye control de opacidad (slider 0–100%).</td></tr>
+    <tr><td><strong>Color de texto</strong></td><td>Color del logo-texto y de los ítems del menú.</td></tr>
+  </table>
+
+  <h3>Panel: Menú de Navegación</h3>
+  <p>Define los ítems del menú superior. Cada ítem tiene:</p>
+  <ul>
+    <li><strong>Etiqueta:</strong> El texto visible del enlace (ej: "Servicios")</li>
+    <li><strong>Enlace:</strong> El destino. Usa <code>#seccion</code> para anclas internas o URLs completas.</li>
+  </ul>
+  <p>Usa el botón <strong>"+ Agregar ítem"</strong> para añadir nuevas entradas y el botón <strong>✕</strong> para eliminar.</p>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>Selector de color con opacidad</strong>
+      <p>Todos los selectores de color del editor incluyen un slider de opacidad debajo del color. Al reducir la opacidad, el valor se guarda como <code>rgba(r,g,b,alpha)</code>. Esto es útil para headers semitransparentes sobre imágenes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 6 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>Pestaña Hero</h2>
+  </div>
+
+  <p>El Hero es la sección principal de impacto visual, generalmente lo primero que ve el visitante. Incluye carrusel de imágenes, título, descripción y llamada a la acción.</p>
+
+  <h3>Panel: Carrusel — 3 Slides</h3>
+  <p>Puedes cargar hasta <strong>3 imágenes</strong> para el carrusel automático del hero:</p>
+  <ul>
+    <li>Las imágenes rotan automáticamente cada 3.5 segundos en el HTML exportado.</li>
+    <li>Slide 1 siempre visible por defecto.</li>
+    <li>Puedes subir imagen desde tu dispositivo o pegar una URL.</li>
+    <li>Si solo usas 1 imagen, no habrá carrusel (imagen fija).</li>
+    <li>La imagen del <strong>Slide 1</strong> también se usa como fondo en la estructura UNAB.</li>
+  </ul>
+
+  <h3>Panel: Texto y Botón</h3>
+  <table>
+    <tr><th>Campo</th><th>Descripción</th></tr>
+    <tr><td><strong>Título Principal</strong></td><td>Encabezado principal del hero. Texto grande y de impacto.</td></tr>
+    <tr><td><strong>Descripción</strong></td><td>Párrafo de apoyo al título. Máximo 2-3 líneas recomendado.</td></tr>
+    <tr><td><strong>Texto del Botón</strong></td><td>Texto de la llamada a la acción (CTA), ej: "Contáctanos ahora".</td></tr>
+    <tr><td><strong>Enlace del Botón</strong></td><td>URL o ancla adonde lleva el botón CTA.</td></tr>
+    <tr><td><strong>Color del Botón</strong></td><td>Color de fondo del botón CTA. Con control de opacidad.</td></tr>
+    <tr><td><strong>Overlay oscuro</strong></td><td>Slider 0–100%. Controla la oscuridad del velo sobre las imágenes para mejorar legibilidad del texto.</td></tr>
+  </table>
+
+  <div class="callout info">
+    <div class="callout-icon">ℹ️</div>
+    <div class="callout-body">
+      <strong>Formulario en el Hero</strong>
+      <p>Si activas "Formulario en Hero" en la pestaña Formulario, el hero cambia a un layout de <strong>2 columnas</strong>: texto a la izquierda y formulario a la derecha. Esta opción está disponible en todas las estructuras excepto UNAB.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 7 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2>Pestaña Servicios / Contenido Central</h2>
+  </div>
+
+  <p>Esta pestaña varía su nombre y contenido según la estructura elegida. Permite editar la sección de valor central de la landing.</p>
+
+  <h3>Clásica y Storytelling — Servicios</h3>
+  <p>Muestra tarjetas con icon, título y descripción. Incluye:</p>
+  <ul>
+    <li><strong>Panel Encabezado:</strong> Título de sección, subtítulo y colores (fondo, texto, acento).</li>
+    <li><strong>Panel Tarjetas:</strong> Lista de servicios/características. Cada tarjeta tiene título y descripción. Puedes agregar o eliminar tarjetas.</li>
+  </ul>
+
+  <h3>Beneficios</h3>
+  <p>Similar a Servicios pero orientado a ventajas competitivas. Cada tarjeta muestra un ícono emoji editable y un rating de estrellas (1–5).</p>
+
+  <h3>Urgencia</h3>
+  <p>Incluye un contador de cuenta regresiva (automático en el HTML exportado: 2 horas) y una lista de argumentos de valor con íconos.</p>
+
+  <h3>Profesional — Ecosistema</h3>
+  <p>Sección superior con título, descripción extendida y colores de la empresa/agencia. Incluye color de acento para destacar elementos.</p>
+
+  <h3>UNAB — Programas</h3>
+  <p>Panel de carreras y programas con categorías (Presencial, Semipresencial, Online). Ver Sección 11 para detalle completo.</p>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>Íconos en tarjetas</strong>
+      <p>Los íconos de las tarjetas de servicios y beneficios usan <strong>emojis</strong> directamente. Pega cualquier emoji desde el teclado (Windows: <code>Win + .</code> / Mac: <code>Cmd + Ctrl + Espacio</code>).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 8 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2>Pestaña Formulario</h2>
+  </div>
+
+  <p>El formulario de contacto o captura de leads es uno de los elementos más importantes de una landing. LandingBuilder ofrece total flexibilidad en su configuración.</p>
+
+  <h3>Tipo de Formulario</h3>
+  <table>
+    <tr><th>Tipo</th><th>Descripción</th></tr>
+    <tr><td><strong>Básico</strong></td><td>Formulario nativo renderizado por LandingBuilder. Los campos son completamente configurables.</td></tr>
+    <tr><td><strong>Embed / Código externo</strong></td><td>Pega código HTML de plataformas externas (HubSpot, ActiveCampaign, Typeform, etc.) y se incrustará directamente en la landing.</td></tr>
+  </table>
+
+  <h3>Posición del Formulario</h3>
+  <p>Con las casillas de verificación puedes controlar dónde aparece el formulario:</p>
+  <ul>
+    <li><strong>Formulario en Hero:</strong> El formulario aparece a la derecha del Hero, en layout de 2 columnas. El texto e imagen quedan a la izquierda.</li>
+    <li><strong>Formulario en Footer:</strong> El formulario aparece antes del footer de la página, en una sección destacada con fondo oscuro.</li>
+    <li>Puedes activar ambas opciones simultáneamente para mostrar el formulario en dos lugares.</li>
+  </ul>
+
+  <h3>Campos del Formulario (tipo Básico)</h3>
+  <p>Cada campo tiene:</p>
+  <table>
+    <tr><th>Propiedad</th><th>Descripción</th></tr>
+    <tr><td><strong>Etiqueta</strong></td><td>Texto del label visible sobre el campo.</td></tr>
+    <tr><td><strong>Tipo</strong></td><td><code>text</code> · <code>email</code> · <code>tel</code> · <code>textarea</code></td></tr>
+    <tr><td><strong>Placeholder</strong></td><td>Texto gris de ejemplo dentro del campo vacío.</td></tr>
+    <tr><td><strong>Requerido</strong></td><td>Si está marcado, el campo muestra un asterisco (*) y será obligatorio.</td></tr>
+  </table>
+  <p>Usa <strong>"+ Agregar campo"</strong> para nuevos campos y <strong>✕</strong> para eliminar.</p>
+
+  <h3>Estilos del Formulario</h3>
+  <ul>
+    <li><strong>Título y Subtítulo:</strong> Encabezado dentro del panel del formulario.</li>
+    <li><strong>Texto del Botón:</strong> Texto del botón de envío.</li>
+    <li><strong>Color del Botón / Texto del botón:</strong> Colores del CTA de envío.</li>
+    <li><strong>Fondo del formulario:</strong> Color de fondo del panel completo (con control de opacidad).</li>
+    <li><strong>Color de texto:</strong> Color de labels y texto dentro del formulario.</li>
+    <li><strong>Texto de privacidad:</strong> Leyenda de política de datos al pie del formulario.</li>
+  </ul>
+
+  <div class="callout warning">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-body">
+      <strong>Formulario Embed</strong>
+      <p>Al usar código embed externo, el estilo del formulario no se puede controlar desde el editor (lo maneja la plataforma origen). Asegúrate de que el código embed sea compatible con el ancho del contenedor.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 9 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <h2>Pestaña UTM</h2>
+  </div>
+
+  <p>Los parámetros UTM permiten rastrear el origen del tráfico en Google Analytics u otras plataformas de analítica web.</p>
+
+  <h3>Parámetros disponibles</h3>
+  <table>
+    <tr><th>Parámetro</th><th>Descripción</th><th>Ejemplo</th></tr>
+    <tr><td><code>utm_source</code></td><td>Origen del tráfico</td><td><code>google</code>, <code>facebook</code>, <code>email</code></td></tr>
+    <tr><td><code>utm_medium</code></td><td>Canal de marketing</td><td><code>cpc</code>, <code>organic</code>, <code>social</code></td></tr>
+    <tr><td><code>utm_campaign</code></td><td>Nombre de campaña</td><td><code>lanzamiento_enero</code></td></tr>
+    <tr><td><code>utm_content</code></td><td>Variante de anuncio</td><td><code>banner_azul</code>, <code>video_v2</code></td></tr>
+    <tr><td><code>utm_term</code></td><td>Keyword (buscadores)</td><td><code>curso+programacion</code></td></tr>
+  </table>
+
+  <h3>Comportamiento en el HTML exportado</h3>
+  <p>Los UTMs configurados se añaden automáticamente a <strong>todos los enlaces</strong> (<code>&lt;a href&gt;</code>) de la landing al exportar el HTML, excepto a las anclas internas (que comienzan con <code>#</code>).</p>
+
+  <p>El resultado en la URL final sería:</p>
+  <pre>https://mi-sitio.cl/gracias?utm_source=google&utm_medium=cpc&utm_campaign=lanzamiento_enero</pre>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>Vista previa de UTM</strong>
+      <p>Al final de la pestaña UTM hay un campo de vista previa que muestra exactamente cómo quedará la cadena de parámetros antes de exportar. Así puedes verificar el resultado final antes de descargar el HTML.</p>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">ℹ️</div>
+    <div class="callout-body">
+      <strong>Campos opcionales</strong>
+      <p>Puedes dejar en blanco cualquier parámetro UTM. Solo los campos con valor se incluirán en la URL generada. No es necesario llenar los 5 campos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 10 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2>Pestaña Footer</h2>
+  </div>
+
+  <p>El footer es la sección inferior de la landing. Incluye información legal, copyright y puede contener el formulario si se activó esa opción.</p>
+
+  <h3>Opciones del Footer</h3>
+  <table>
+    <tr><th>Campo</th><th>Descripción</th></tr>
+    <tr><td><strong>Nombre de empresa</strong></td><td>Aparece en la sección de información de la empresa dentro del footer.</td></tr>
+    <tr><td><strong>Descripción</strong></td><td>Breve texto descriptivo de la empresa o marca.</td></tr>
+    <tr><td><strong>Copyright</strong></td><td>Texto de derechos de autor al pie (ej: "© 2026 Mi Empresa. Todos los derechos reservados.").</td></tr>
+    <tr><td><strong>Fondo</strong></td><td>Color de fondo del footer, generalmente oscuro. Con control de opacidad.</td></tr>
+    <tr><td><strong>Texto</strong></td><td>Color del texto dentro del footer.</td></tr>
+  </table>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>Formulario en Footer</strong>
+      <p>Si activas "Formulario en Footer" en la pestaña Formulario, aparecerá una sección adicional justo encima del footer con el formulario en un panel destacado. Es la posición ideal para capturar leads al final del recorrido de la landing.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 11 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <h2>Estructura UNAB — Formato Universidad</h2>
+  </div>
+
+  <p>La estructura UNAB es un formato especializado para instituciones educativas. Tiene un layout único que no sigue la lógica estándar de las otras estructuras.</p>
+
+  <h3>Layout de la estructura UNAB</h3>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="icon">🖼️</div>
+      <h4>Hero / Cabecera</h4>
+      <p>La imagen del Slide 1 del Hero cubre toda la estructura como fondo con <code>background-size: cover</code>. El overlay oscuro cubre todo el contenido.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🏛️</div>
+      <h4>Header institucional</h4>
+      <p>Logo de la institución a la izquierda con el título del hero. A la derecha aparece el año de admisión en tipografía grande.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📚</div>
+      <h4>Panel de Programas</h4>
+      <p>Columna izquierda con categorías de carreras (Presencial, Semipresencial, Online) y sus programas listados.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📋</div>
+      <h4>Formulario de postulación</h4>
+      <p>Columna derecha con campos específicos para postulación: RUT, nombres, apellidos, teléfono, email, programa y campus.</p>
+    </div>
+  </div>
+
+  <h3>Pestaña "Servicios" → Programas</h3>
+  <table>
+    <tr><th>Campo</th><th>Descripción</th></tr>
+    <tr><td><strong>Título del Hero</strong></td><td>Texto principal sobre la imagen de fondo (ej: "Es momento de llegar más lejos").</td></tr>
+    <tr><td><strong>Label Admisión</strong></td><td>Etiqueta pequeña sobre el año (ej: "Admisión").</td></tr>
+    <tr><td><strong>Año Admisión</strong></td><td>Año en tipografía grande a la derecha del header (ej: "2026").</td></tr>
+    <tr><td><strong>Fondo overlay</strong></td><td>Color de fondo del overlay principal (por defecto azul oscuro semitransparente).</td></tr>
+    <tr><td><strong>Título del Panel</strong></td><td>Encabezado del panel de carreras (ej: "Carreras y Programas").</td></tr>
+    <tr><td><strong>Categorías</strong></td><td>Cada categoría tiene un nombre y lista de programas. Se pueden agregar y editar.</td></tr>
+    <tr><td><strong>Texto footer del panel</strong></td><td>Texto al pie del panel de programas (ej: "+INFO EN MI-SITIO.CL").</td></tr>
+  </table>
+
+  <h3>Pestaña "Nosotros" → Acreditaciones</h3>
+  <p>Footer de la estructura UNAB con logos de acreditaciones institucionales. Cada acreditación tiene:</p>
+  <ul>
+    <li><strong>Texto:</strong> Nombre o descripción de la acreditación.</li>
+    <li><strong>Ícono:</strong> Símbolo de respaldo si no hay imagen.</li>
+    <li><strong>URL de logo:</strong> Imagen del logo de la entidad acreditadora.</li>
+  </ul>
+
+  <div class="callout info">
+    <div class="callout-icon">ℹ️</div>
+    <div class="callout-body">
+      <strong>Responsive en UNAB</strong>
+      <p>El HTML exportado de la estructura UNAB usa Bootstrap 5.3 con clases <code>col-12 col-md-5</code> y <code>col-12 col-md-4</code>. En móvil, el panel de programas y el formulario se apilan verticalmente.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 12 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <h2>Estructura Profesional</h2>
+  </div>
+
+  <p>La estructura Profesional está diseñada para agencias, empresas B2B y portafolios. Incluye secciones adicionales que no tienen las otras estructuras.</p>
+
+  <h3>Secciones exclusivas</h3>
+
+  <h4>Ecosistema</h4>
+  <p>Sección de presentación de la empresa con título de bienvenida, descripción extendida y tarjetas de propuesta de valor. Personalizable en colores de fondo y acento.</p>
+
+  <h4>Catálogo de Servicios</h4>
+  <p>Panel en 2 columnas con hasta N ítems por columna. Cada ítem tiene título y descripción. Útil para listar servicios específicos con más detalle que las tarjetas simples.</p>
+
+  <h4>Fases / Proceso</h4>
+  <p>Sección que explica el proceso de trabajo en pasos con íconos. Cada fase tiene título, descripción e ícono emoji. Transmite transparencia y metodología.</p>
+
+  <h4>Formulario en Footer</h4>
+  <p>En la estructura Profesional, el formulario aparece por defecto en el Footer (activado por defecto). El formulario se muestra en 2 columnas: texto a la izquierda, campos a la derecha.</p>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <strong>Colores de la estructura Profesional</strong>
+      <p>El hero de la estructura Profesional tiene su propio color de fondo independiente (<strong>"Fondo hero"</strong>) en la pestaña de Ecosistema. Esto permite un hero de color sólido diferente al header.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 13-14 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <h2>Guardar y Gestionar Landings</h2>
+  </div>
+
+  <p>LandingBuilder guarda las landings en el <strong>almacenamiento local del navegador</strong> (localStorage). Esto significa que estarán disponibles siempre que uses el mismo navegador en el mismo dispositivo.</p>
+
+  <h3>Acciones disponibles</h3>
+  <table>
+    <tr><th>Acción</th><th>Cómo hacerlo</th><th>Resultado</th></tr>
+    <tr><td><strong>Guardar</strong></td><td>Botón "Guardar" en la barra superior</td><td>Guarda o actualiza la landing en "Mis Landings"</td></tr>
+    <tr><td><strong>Ver lista</strong></td><td>Pestaña "Mis Landings" en la barra superior</td><td>Muestra todas las landings guardadas</td></tr>
+    <tr><td><strong>Editar</strong></td><td>Botón "Editar" en la tarjeta de la landing</td><td>Carga la landing en el editor</td></tr>
+    <tr><td><strong>Vista previa</strong></td><td>Botón "Vista" o hacer clic en la miniatura</td><td>Abre la landing en modo pantalla completa</td></tr>
+    <tr><td><strong>Descargar HTML</strong></td><td>Botón "HTML" en la tarjeta o "↓ HTML" en topbar</td><td>Descarga el archivo HTML listo para publicar</td></tr>
+    <tr><td><strong>Eliminar</strong></td><td>Botón ✕ en la tarjeta (pide confirmación)</td><td>Borra permanentemente la landing guardada</td></tr>
+  </table>
+
+  <div class="callout warning">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-body">
+      <strong>Precaución con el localStorage</strong>
+      <p>Las landings se guardan en el navegador, no en un servidor. Si limpias el caché o el almacenamiento del navegador, se perderán. Descarga siempre el HTML de las landings importantes como respaldo.</p>
+    </div>
+  </div>
+
+  <hr>
+  <div class="section-header mt-32">
+    <div class="section-num">14</div>
+    <h2>Exportar HTML</h2>
+  </div>
+
+  <p>El archivo HTML exportado es completamente autónomo e incluye:</p>
+  <ul>
+    <li>Bootstrap 5.3.3 (CDN) para estilos responsive</li>
+    <li>Todo el contenido y estilos de la landing embebidos</li>
+    <li>JavaScript para el carrusel automático de imágenes</li>
+    <li>JavaScript para el contador de cuenta regresiva (estructura Urgencia)</li>
+    <li>Los parámetros UTM configurados aplicados a todos los enlaces</li>
+  </ul>
+
+  <h3>Cómo publicar el HTML</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Descarga el HTML</strong>
+        <p>Usa el botón "↓ HTML". El archivo se descargará con el nombre de tu landing (ej: <code>mi-landing.html</code>).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Sube el archivo a tu servidor</strong>
+        <p>Via FTP, panel de hosting, o arrástralo a una plataforma como Netlify Drop, GitHub Pages o Cloudflare Pages.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Verifica en distintos dispositivos</strong>
+        <p>Prueba en móvil, tablet y escritorio para confirmar que el responsive funciona correctamente.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SEC 15 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-header">
+    <div class="section-num">15</div>
+    <h2>Referencia Rápida</h2>
+  </div>
+
+  <h3>Atajos y acciones comunes</h3>
+  <table>
+    <tr><th>Acción</th><th>Cómo</th></tr>
+    <tr><td>Nueva landing</td><td>Botón "+ Nueva" en barra superior → elige estructura</td></tr>
+    <tr><td>Guardar cambios</td><td>Botón "Guardar" (barra superior)</td></tr>
+    <tr><td>Descargar HTML</td><td>Botón "↓ HTML" (barra superior o en "Mis Landings")</td></tr>
+    <tr><td>Vista previa completa</td><td>Botón "Vista Previa" (barra superior)</td></tr>
+    <tr><td>Volver al editor desde preview</td><td>Botón "← Volver" (en vista previa)</td></tr>
+    <tr><td>Agregar imagen al carrusel</td><td>Hero → Slide N → subir o pegar URL</td></tr>
+    <tr><td>Activar formulario en Hero</td><td>Formulario → casilla "Formulario en Hero"</td></tr>
+    <tr><td>Activar formulario en Footer</td><td>Formulario → casilla "Formulario en Footer"</td></tr>
+    <tr><td>Cambiar opacidad de color</td><td>Cualquier ColorRow → slider 0–100% debajo del color</td></tr>
+    <tr><td>Agregar ítem al menú</td><td>Header → Menú → "+ Agregar ítem"</td></tr>
+    <tr><td>Agregar campo al formulario</td><td>Formulario → "+ Agregar campo"</td></tr>
+  </table>
+
+  <h3>Tipos de campos de formulario</h3>
+  <table>
+    <tr><th>Tipo</th><th>Input HTML</th><th>Uso típico</th></tr>
+    <tr><td><code>text</code></td><td>Campo de texto libre</td><td>Nombre, RUT, empresa</td></tr>
+    <tr><td><code>email</code></td><td>Campo de email con validación</td><td>Correo electrónico</td></tr>
+    <tr><td><code>tel</code></td><td>Campo de teléfono</td><td>Número de móvil</td></tr>
+    <tr><td><code>textarea</code></td><td>Área de texto multilínea</td><td>Mensajes, comentarios</td></tr>
+  </table>
+
+  <h3>Compatibilidad del HTML exportado</h3>
+  <table>
+    <tr><th>Plataforma</th><th>Compatible</th><th>Notas</th></tr>
+    <tr><td>Apache / Nginx</td><td><span class="badge green">✓ Sí</span></td><td>Funciona como cualquier página HTML estática</td></tr>
+    <tr><td>Netlify / Vercel</td><td><span class="badge green">✓ Sí</span></td><td>Arrastra y suelta el archivo HTML</td></tr>
+    <tr><td>GitHub Pages</td><td><span class="badge green">✓ Sí</span></td><td>Sube el .html al repositorio</td></tr>
+    <tr><td>WordPress (página)</td><td><span class="badge yellow">⚠ Parcial</span></td><td>Pegar HTML en bloque HTML/Custom</td></tr>
+    <tr><td>Email</td><td><span class="badge yellow">⚠ No recomendado</span></td><td>Los clientes de email tienen soporte limitado de CSS</td></tr>
+  </table>
+
+  <div class="callout success" style="margin-top: 28px;">
+    <div class="callout-icon">🚀</div>
+    <div class="callout-body">
+      <strong>¿Necesitas ayuda?</strong>
+      <p>Para soporte técnico o consultas sobre LandingBuilder, contacta a <strong>Mentalidad Web</strong> en <strong>rvera@mentalidadweb.com</strong>. Para reportar bugs, abre un issue en el repositorio GitHub del proyecto.</p>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:48px;padding-top:24px;border-top:1px solid var(--border)">
+    <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;margin:0 auto 12px">L</div>
+    <p style="color:var(--muted);font-size:12px;">LandingBuilder v1.0 · Manual de Usuario · 2026<br>Mentalidad Web — rvera@mentalidadweb.com</p>
+  </div>
+</div>
+
+</body>
+</html>
