@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const features = [
-  { icon: "▦", label: "Selector de", bold: "6 estructuras" , rest: " de landing" },
+  { icon: "▦", label: "Selector de", bold: "6 estructuras", rest: " de landing" },
   { icon: "✎", label: "Editor visual con ", bold: "vista previa", rest: " en tiempo real" },
   { icon: "⊞", label: "HTML responsive con ", bold: "Bootstrap", rest: " incluido" },
   { icon: "⊙", label: "Publicación con ", bold: "URL pública", rest: " al instante" },
@@ -15,8 +15,9 @@ const features = [
 
 const DOMAIN = "@mentalidadweb.com";
 
-export default function LoginPage() {
-  const { data: session, status } = useSession();
+// Componente separado para aislar useSearchParams en Suspense
+function LoginForm() {
+  const { status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -47,24 +48,80 @@ export default function LoginPage() {
       return;
     }
     setLoading(true);
-    const res = await signIn("credentials", {
-      email, password, redirect: false, callbackUrl: "/",
-    });
+    const res = await signIn("credentials", { email, password, redirect: false, callbackUrl: "/" });
     setLoading(false);
-    if (res?.error) {
-      setError("Correo o contraseña incorrectos.");
-    } else {
-      router.replace("/");
-    }
+    if (res?.error) setError("Correo o contraseña incorrectos.");
+    else router.replace("/");
   };
 
+  return (
+    <div style={{ flex: 1, padding: "44px 48px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <LogoIcon size={56} />
+      <div style={{ height: 20 }} />
+
+      <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1a2535", marginBottom: 6, textAlign: "center" }}>Iniciar sesión</h1>
+      <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 28, textAlign: "center" }}>Ingresa con tu cuenta corporativa</p>
+
+      {error && (
+        <div style={{ width: "100%", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "#dc2626", marginBottom: 16, textAlign: "center" }}>
+          {error}
+        </div>
+      )}
+
+      <button onClick={handleGoogle} disabled={loading}
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "12px 20px", border: "1.5px solid #d1d5db", borderRadius: 10, background: "#fff", cursor: loading ? "not-allowed" : "pointer", fontSize: 14, fontWeight: 600, color: "#1a2535", marginBottom: 20, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+        <GoogleIcon />
+        Iniciar sesión con Google
+      </button>
+
+      <div style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+        <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
+        <span style={{ fontSize: 11, color: "#9ca3af", whiteSpace: "nowrap" }}>o con correo y contraseña</span>
+        <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
+      </div>
+
+      <form onSubmit={handleCredentials} style={{ width: "100%" }}>
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "#6b7280", letterSpacing: ".6px", textTransform: "uppercase", marginBottom: 6 }}>Correo Electrónico</label>
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@mentalidadweb.com"
+            style={{ width: "100%", padding: "11px 14px", border: "1.5px solid #e5e7eb", borderRadius: 10, fontSize: 13, color: "#1a2535", outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "#6b7280", letterSpacing: ".6px", textTransform: "uppercase", marginBottom: 6 }}>Contraseña</label>
+          <div style={{ position: "relative" }}>
+            <input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••"
+              style={{ width: "100%", padding: "11px 44px 11px 14px", border: "1.5px solid #e5e7eb", borderRadius: 10, fontSize: 13, color: "#1a2535", outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+            <button type="button" onClick={() => setShowPass(!showPass)}
+              style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "#7267ef", border: "none", borderRadius: 5, padding: "3px 7px", fontSize: 10, color: "#fff", cursor: "pointer" }}>
+              {showPass ? "ocultar" : "ver"}
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" disabled={loading}
+          style={{ width: "100%", padding: "13px", borderRadius: 10, border: "none", background: "#1a2535", color: "#fff", fontSize: 15, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", opacity: loading ? .7 : 1, marginBottom: 16 }}>
+          {loading ? "Ingresando..." : "Ingresar"}
+        </button>
+      </form>
+
+      <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", marginBottom: 24 }}>
+        Solo cuentas <strong style={{ color: "#1a2535" }}>@mentalidadweb.com</strong> tienen acceso.
+      </p>
+      <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center" }}>
+        © 2026 Aceleración IA · Mentalidad Web
+      </p>
+    </div>
+  );
+}
+
+export default function LoginPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#e8eaf0", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px", fontFamily: "'Inter','Segoe UI',system-ui,sans-serif" }}>
       <div style={{ display: "flex", width: "100%", maxWidth: 900, background: "#fff", borderRadius: 20, boxShadow: "0 8px 40px rgba(0,0,0,0.10)", overflow: "hidden", minHeight: 560 }}>
 
-        {/* ── LEFT PANEL ──────────────────────────────────────────────── */}
+        {/* LEFT PANEL */}
         <div style={{ flex: "0 0 42%", background: "#f7f8fa", padding: "44px 40px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-          {/* Logo */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 36 }}>
               <LogoIcon size={48} />
@@ -83,7 +140,6 @@ export default function LoginPage() {
               Crea, edita y publica landing pages profesionales con editor visual y exportación responsive lista para usar.
             </p>
 
-            {/* Feature list */}
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {features.map((f, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -98,83 +154,20 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Bottom copyright */}
           <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 32 }}>
             © 2026 LandingBuilder · Mentalidad Web
           </div>
         </div>
 
-        {/* ── RIGHT PANEL ─────────────────────────────────────────────── */}
-        <div style={{ flex: 1, padding: "44px 48px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-          <LogoIcon size={56} style={{ marginBottom: 20 }} />
-
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1a2535", marginBottom: 6, textAlign: "center" }}>Iniciar sesión</h1>
-          <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 28, textAlign: "center" }}>Ingresa con tu cuenta corporativa</p>
-
-          {/* Error */}
-          {error && (
-            <div style={{ width: "100%", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "#dc2626", marginBottom: 16, textAlign: "center" }}>
-              {error}
-            </div>
-          )}
-
-          {/* Google button */}
-          <button onClick={handleGoogle} disabled={loading}
-            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "12px 20px", border: "1.5px solid #d1d5db", borderRadius: 10, background: "#fff", cursor: loading ? "not-allowed" : "pointer", fontSize: 14, fontWeight: 600, color: "#1a2535", marginBottom: 20, transition: "box-shadow .15s", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-            <GoogleIcon />
-            Iniciar sesión con Google
-          </button>
-
-          {/* Divider */}
-          <div style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-            <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
-            <span style={{ fontSize: 11, color: "#9ca3af", whiteSpace: "nowrap" }}>o con correo y contraseña</span>
-            <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
-          </div>
-
-          {/* Credentials form */}
-          <form onSubmit={handleCredentials} style={{ width: "100%" }}>
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "#6b7280", letterSpacing: ".6px", textTransform: "uppercase", marginBottom: 6 }}>Correo Electrónico</label>
-              <div style={{ position: "relative" }}>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@mentalidadweb.com"
-                  style={{ width: "100%", padding: "11px 44px 11px 14px", border: "1.5px solid #e5e7eb", borderRadius: 10, fontSize: 13, color: "#1a2535", outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
-                <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "#7267ef", borderRadius: 5, padding: "2px 5px", fontSize: 9, color: "#fff", fontWeight: 700 }}>···</span>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "#6b7280", letterSpacing: ".6px", textTransform: "uppercase", marginBottom: 6 }}>Contraseña</label>
-              <div style={{ position: "relative" }}>
-                <input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••"
-                  style={{ width: "100%", padding: "11px 44px 11px 14px", border: "1.5px solid #e5e7eb", borderRadius: 10, fontSize: 13, color: "#1a2535", outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
-                <button type="button" onClick={() => setShowPass(!showPass)}
-                  style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "#7267ef", border: "none", borderRadius: 5, padding: "2px 5px", fontSize: 9, color: "#fff", fontWeight: 700, cursor: "pointer" }}>
-                  {showPass ? "ocultar" : "···"}
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" disabled={loading}
-              style={{ width: "100%", padding: "13px", borderRadius: 10, border: "none", background: "#1a2535", color: "#fff", fontSize: 15, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", opacity: loading ? .7 : 1, marginBottom: 16 }}>
-              {loading ? "Ingresando..." : "Ingresar"}
-            </button>
-          </form>
-
-          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", marginBottom: 24 }}>
-            Solo cuentas <strong style={{ color: "#1a2535" }}>@mentalidadweb.com</strong> tienen acceso.
-          </p>
-
-          <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center" }}>
-            © 2026 Aceleración IA · Mentalidad Web
-          </p>
-        </div>
+        {/* RIGHT PANEL — Suspense requerido por useSearchParams en Next.js 15 */}
+        <Suspense fallback={<div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>Cargando...</div>}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
 }
 
-// ── Mentalidad Web circular logo ────────────────────────────────────────────
 function LogoIcon({ size = 40 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -188,7 +181,6 @@ function LogoIcon({ size = 40 }) {
   );
 }
 
-// ── Google "G" icon ──────────────────────────────────────────────────────────
 function GoogleIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
