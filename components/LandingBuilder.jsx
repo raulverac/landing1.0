@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { signOut } from "next-auth/react";
 
 // ─── CONSTANTS ──────────────────────────────────────────────────────────────
 const ACC = "#e6a817";
@@ -2272,6 +2273,8 @@ export default function LandingBuilder() {
             <button onClick={() => doDownload(null)} style={{ padding: "7px 16px", borderRadius: UI_RADIUS, border: "none", background: UI_PRIMARY, color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 700, boxShadow: UI_SHADOW_MD }}>↓ HTML</button>
           </>}
           {page === "preview" && <button onClick={() => setPage("editor")} style={{ padding: "7px 14px", borderRadius: UI_RADIUS, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 12, fontWeight: 600, color: UI_MUTED }}>← Volver</button>}
+          <div style={{ width: 1, height: 22, background: UI_BORDER, margin: "0 4px" }} />
+          <button onClick={() => signOut({ callbackUrl: "/login" })} style={{ padding: "7px 14px", borderRadius: UI_RADIUS, border: `1px solid ${UI_BORDER}`, background: UI_CARD, cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#ef4444" }}>Cerrar sesión</button>
         </div>
       </div>
 
