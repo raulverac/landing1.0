@@ -58,7 +58,7 @@ const mkDefault = (struct = "clasica") => ({
   },
   services: {
     title: "Nuestros Servicios", subtitle: "Todo lo que necesitas para crecer",
-    bgColor: "#f8f9fa", titleColor: DARK, cardBg: "#ffffff", accent: ACC,
+    bgColor: "#f8f9fa", titleColor: DARK, cardBg: "#ffffff", accent: ACC, cardRadius: 9,
     cards: [
       { icon: "🚀", title: "Estrategia", desc: "Planificamos el camino al éxito.", imgUrl: "", titleSize: 14, descSize: 12 },
       { icon: "🎨", title: "Diseño", desc: "Creamos experiencias visuales memorables.", imgUrl: "", titleSize: 14, descSize: 12 },
@@ -328,7 +328,7 @@ const buildPreviewHTML = (d, full = false) => {
         </div>
         <div class="row g-3">
           ${d.services.cards.map(c => `<div class="${colCls}">
-            <div style="background:${d.services.cardBg};border-radius:9px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);height:100%">
+            <div style="background:${d.services.cardBg};border-radius:${d.services.cardRadius??9}px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);height:100%">
               ${c.imgUrl ? `<img src="${c.imgUrl}" style="width:100%;height:160px;object-fit:cover;display:block">` : ""}
               <div style="padding:20px;text-align:center">
                 ${!c.imgUrl ? `<div style="font-size:28px;margin-bottom:10px">${c.icon}</div>` : ""}
@@ -1250,6 +1250,12 @@ const EditorSidebar = ({ data, setData, onSave }) => {
             <ColorRow label="Fondo" value={data.services.bgColor} onChange={v => upd("services", "bgColor", v)} />
             <ColorRow label="Texto" value={data.services.titleColor} onChange={v => upd("services", "titleColor", v)} />
             <ColorRow label="Acento" value={data.services.accent} onChange={v => upd("services", "accent", v)} />
+            <div style={{ marginBottom: 10 }}>
+              <label style={labelStyle}>Radio de tarjetas — {data.services.cardRadius ?? 9}px</label>
+              <input type="range" min={0} max={30} step={1} value={data.services.cardRadius ?? 9}
+                onChange={e => upd("services", "cardRadius", parseInt(e.target.value))}
+                style={{ width: "100%", accentColor: UI_PRIMARY, cursor: "pointer" }} />
+            </div>
           </Panel>
           <Panel title="🃏 Tarjetas">
             {data.services.cards.map((c, i) => (
@@ -1832,7 +1838,7 @@ const LivePreview = ({ data }) => {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(data.services.cards.length, 4)},1fr)`, gap: 8 }}>
             {data.services.cards.map((c, i) => (
-              <div key={i} style={{ background: data.services.cardBg, borderRadius: 9, overflow: "hidden", boxShadow: "0 2px 10px rgba(0,0,0,.06)" }}>
+              <div key={i} style={{ background: data.services.cardBg, borderRadius: data.services.cardRadius ?? 9, overflow: "hidden", boxShadow: "0 2px 10px rgba(0,0,0,.06)" }}>
                 {c.imgUrl && <img src={c.imgUrl} alt={c.title} style={{ width: "100%", height: 80, objectFit: "cover", display: "block" }} />}
                 <div style={{ padding: 10, textAlign: "center" }}>
                   {!c.imgUrl && <div style={{ fontSize: 16, marginBottom: 6 }}>{c.icon}</div>}
