@@ -54,7 +54,7 @@ const mkDefault = (struct = "clasica") => ({
     ],
     title: "Bienvenido a Nuestra Empresa",
     desc: "Ofrecemos soluciones innovadoras para tu negocio.",
-    btnText: "Comenzar Ahora", btnHref: "#services", btnColor: ACC, overlay: 0.5,
+    btnText: "Comenzar Ahora", btnHref: "#services", btnColor: ACC, btnTextColor: DARK, btnRadius: 5, overlay: 0.5,
   },
   services: {
     title: "Nuestros Servicios", subtitle: "Todo lo que necesitas para crecer",
@@ -297,7 +297,7 @@ const buildPreviewHTML = (d, full = false) => {
             <div class="col-12 col-lg-6">
               <h1 style="color:#fff;font-size:clamp(24px,4vw,44px);font-weight:700;line-height:1.2;margin-bottom:14px">${d.hero.title}</h1>
               <p style="color:rgba(255,255,255,.85);font-size:clamp(14px,2vw,16px);margin-bottom:24px">${d.hero.desc}</p>
-              <a href="${d.hero.btnHref}" style="display:inline-block;background:${d.hero.btnColor};color:${DARK};padding:12px 32px;border-radius:5px;text-decoration:none;font-weight:700;font-size:15px">${d.hero.btnText}</a>
+              <a href="${d.hero.btnHref}" style="display:inline-block;background:${d.hero.btnColor};color:${d.hero.btnTextColor||DARK};padding:12px 32px;border-radius:${d.hero.btnRadius??5}px;text-decoration:none;font-weight:700;font-size:15px">${d.hero.btnText}</a>
             </div>
             <div class="col-12 col-lg-5 offset-lg-1">
               <div style="background:${d.form.bgColor||DARK};border-radius:10px;padding:22px 24px">${mkFormFields(d.form)}</div>
@@ -307,7 +307,7 @@ const buildPreviewHTML = (d, full = false) => {
             <div class="col-12 col-md-8 text-center">
               <h1 style="color:#fff;font-size:clamp(26px,5vw,48px);font-weight:700;line-height:1.2;margin-bottom:16px">${d.hero.title}</h1>
               <p style="color:rgba(255,255,255,.85);font-size:clamp(14px,2vw,17px);margin-bottom:28px">${d.hero.desc}</p>
-              <a href="${d.hero.btnHref}" style="display:inline-block;background:${d.hero.btnColor};color:${DARK};padding:13px 36px;border-radius:5px;text-decoration:none;font-weight:700;font-size:15px">${d.hero.btnText}</a>
+              <a href="${d.hero.btnHref}" style="display:inline-block;background:${d.hero.btnColor};color:${d.hero.btnTextColor||DARK};padding:13px 36px;border-radius:${d.hero.btnRadius??5}px;text-decoration:none;font-weight:700;font-size:15px">${d.hero.btnText}</a>
             </div>
           </div>`
       }
@@ -1227,6 +1227,13 @@ const EditorSidebar = ({ data, setData, onSave }) => {
             <Field label="Texto del Botón" value={data.hero.btnText} onChange={v => upd("hero", "btnText", v)} />
             <Field label="Enlace del Botón" value={data.hero.btnHref} onChange={v => upd("hero", "btnHref", v)} />
             <ColorRow label="Color del Botón" value={data.hero.btnColor} onChange={v => upd("hero", "btnColor", v)} />
+            <ColorRow label="Color del Texto del Botón" value={data.hero.btnTextColor || DARK} onChange={v => upd("hero", "btnTextColor", v)} />
+            <div style={{ marginBottom: 10 }}>
+              <label style={labelStyle}>Radio del Botón — {data.hero.btnRadius ?? 5}px</label>
+              <input type="range" min={0} max={50} step={1} value={data.hero.btnRadius ?? 5}
+                onChange={e => upd("hero", "btnRadius", parseInt(e.target.value))}
+                style={{ width: "100%", accentColor: UI_PRIMARY, cursor: "pointer" }} />
+            </div>
             <div style={{ marginBottom: 10 }}>
               <label style={labelStyle}>Overlay oscuro — {Math.round(data.hero.overlay * 100)}%</label>
               <input type="range" min={0} max={1} step={0.05} value={data.hero.overlay}
@@ -1801,7 +1808,7 @@ const LivePreview = ({ data }) => {
             <div style={{ flex: 1, textAlign: "left" }}>
               <h1 style={{ color: "#fff", fontSize: 19, fontWeight: 700, marginBottom: 7, lineHeight: 1.2 }}>{data.hero.title}</h1>
               <p style={{ color: "rgba(255,255,255,.85)", fontSize: 10, maxWidth: 340, marginBottom: 12 }}>{data.hero.desc}</p>
-              <a href={data.hero.btnHref} style={{ background: data.hero.btnColor, color: DARK, padding: "7px 16px", borderRadius: 5, textDecoration: "none", fontWeight: 700, fontSize: 10 }}>{data.hero.btnText}</a>
+              <a href={data.hero.btnHref} style={{ background: data.hero.btnColor, color: data.hero.btnTextColor || DARK, padding: "7px 16px", borderRadius: data.hero.btnRadius ?? 5, textDecoration: "none", fontWeight: 700, fontSize: 10 }}>{data.hero.btnText}</a>
             </div>
             <div style={{ background: (data.form && data.form.bgColor) || DARK, borderRadius: 7, padding: "10px 12px", width: 190, flexShrink: 0, overflowY: "auto", maxHeight: hH - 20 }}>
               <ProForm form={data.form} compact={true} />
@@ -1811,7 +1818,7 @@ const LivePreview = ({ data }) => {
           <div style={{ position: "relative", zIndex: 2, height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: `0 ${P}` }}>
             <h1 style={{ color: "#fff", fontSize: 20, fontWeight: 700, marginBottom: 8, lineHeight: 1.2 }}>{data.hero.title}</h1>
             <p style={{ color: "rgba(255,255,255,.85)", fontSize: 11, maxWidth: 480, marginBottom: 14 }}>{data.hero.desc}</p>
-            <a href={data.hero.btnHref} style={{ background: data.hero.btnColor, color: DARK, padding: "7px 18px", borderRadius: 5, textDecoration: "none", fontWeight: 700, fontSize: 10 }}>{data.hero.btnText}</a>
+            <a href={data.hero.btnHref} style={{ background: data.hero.btnColor, color: data.hero.btnTextColor || DARK, padding: "7px 18px", borderRadius: data.hero.btnRadius ?? 5, textDecoration: "none", fontWeight: 700, fontSize: 10 }}>{data.hero.btnText}</a>
           </div>
         )}
       </section>
