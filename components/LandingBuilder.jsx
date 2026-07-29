@@ -147,7 +147,7 @@ const mkDefault = (struct = "clasica") => ({
     desc: "Somos un equipo apasionado dedicado a transformar ideas en realidades digitales.\n\nCon más de 10 años de experiencia hemos ayudado a cientos de empresas.",
     mediaType: "image",
     mediaUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=700&q=70",
-    videoUrl: "", bgColor: "#ffffff", textColor: "#333333", imgLeft: true,
+    videoUrl: "", bgColor: "#ffffff", textColor: "#333333", imgLeft: true, imgRadius: 10,
   },
   // Form config
   form: {
@@ -510,8 +510,8 @@ const buildPreviewHTML = (d, full = false) => {
         <div class="row g-4 align-items-center">
           <div class="col-12 col-md-6 ${imgOrder}">
             ${d.about.mediaType==="video" && d.about.videoUrl
-              ? `<iframe src="${d.about.videoUrl}" style="width:100%;height:300px;border-radius:10px;border:none" allowfullscreen></iframe>`
-              : `<img src="${d.about.mediaUrl}" style="width:100%;border-radius:10px;object-fit:cover;max-height:340px;display:block" />`
+              ? `<iframe src="${d.about.videoUrl}" style="width:100%;height:300px;border-radius:${d.about.imgRadius??10}px;border:none" allowfullscreen></iframe>`
+              : `<img src="${d.about.mediaUrl}" style="width:100%;border-radius:${d.about.imgRadius??10}px;object-fit:cover;max-height:340px;display:block" />`
             }
           </div>
           <div class="col-12 col-md-6 ${txtOrder}">
@@ -1633,6 +1633,12 @@ const EditorSidebar = ({ data, setData, onSave }) => {
               ? <ImgField label="URL o subir imagen" value={data.about.mediaUrl} onChange={v => upd("about", "mediaUrl", v)} />
               : <Field label="URL embed (YouTube/Vimeo)" value={data.about.videoUrl} onChange={v => upd("about", "videoUrl", v)} placeholder="https://www.youtube.com/embed/..." />
             }
+            <div style={{ marginBottom: 10, marginTop: 8 }}>
+              <label style={labelStyle}>Radio de imagen — {data.about.imgRadius ?? 10}px</label>
+              <input type="range" min={0} max={50} step={1} value={data.about.imgRadius ?? 10}
+                onChange={e => upd("about", "imgRadius", parseInt(e.target.value))}
+                style={{ width: "100%", accentColor: UI_PRIMARY, cursor: "pointer" }} />
+            </div>
           </Panel>
         </>}
 
@@ -2015,7 +2021,7 @@ const LivePreview = ({ data }) => {
             <div style={{ flex: 1 }}>
               {data.about.mediaType === "video" && data.about.videoUrl
                 ? <iframe src={data.about.videoUrl} style={{ width: "100%", height: 130, borderRadius: 9, border: "none" }} allowFullScreen />
-                : <img src={data.about.mediaUrl} alt="" style={{ width: "100%", borderRadius: 9, objectFit: "cover", maxHeight: 150, display: "block" }} />
+                : <img src={data.about.mediaUrl} alt="" style={{ width: "100%", borderRadius: data.about.imgRadius ?? 10, objectFit: "cover", maxHeight: 150, display: "block" }} />
               }
             </div>
             <div style={{ flex: 1 }}>
